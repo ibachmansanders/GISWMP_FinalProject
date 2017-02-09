@@ -1,0 +1,25 @@
+{
+  "name": "tweetnet",
+  "version": "1.0.0",
+  "description": "Collecting tweets from the Twitter API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibachmansanders/GISWMP_FinalProject.git"
+  },
+  "author": "Ian Bachman-Sanders <ibachman.sanders@gmail.com> (http://www.goldentandem.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ibachmansanders/GISWMP_FinalProject/issues"
+  },
+  "homepage": "https://github.com/ibachmansanders/GISWMP_FinalProject#readme",
+  "dependencies": {
+    "express": "latest",
+    "body-parser": "latest",
+    "pg": "latest",
+    "pg-promise": "latest"
+  }
+}
