@@ -1,0 +1,25 @@
+html,body{
+  background-color: #f5f5f5;
+}
+
+body {
+  padding-top: 50px;
+}
+
+.container-fluid, .row{
+  background-color: #f5f5f5;
+}
+.sidebar {
+  padding: 12px;
+  background-color: #f5f5f5;
+}
+
+form {
+  padding-top: 12px;
+}
+
+#map-canvas {
+  height:100%;
+  position: absolute;
+  right:0;
+}
