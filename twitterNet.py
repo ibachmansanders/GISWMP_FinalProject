@@ -14,15 +14,15 @@ print "extensions imported!"
 
 print "setting outfile..."
 #TEST outfile
-outfileName = os.path.normpath("C:/programming/database/tweets2.csv/")
+outfileName = os.path.normpath("C:/programming/database/tweets3.csv/")
 print "outfile set!"
 
 #Consumer key/secret TODO: How to keep secret?
-consumerKey = "####"
-consumerSecret = "####"
+consumerKey = "TdlpnJVWhEyuXxyq79DgSDuVk"
+consumerSecret = "a7KSKsIw0wPHGNt5GgxSNf5ZrlCRDTELonsO3aL1rnDj8ofHca"
 #API keys --> Make hidden?
-accessToken = "####"
-accessTokenSecret = "####"
+accessToken = "827628471018987521-JgyMsATzgh8jvQ2N1QmKdICkQOTyHMv"
+accessTokenSecret = "HakU9132RZ0YTZtatqutsgUrC6CtqKUMFZLs9UYFqoyhg"
 
 
 print "setting up csv and logging session start time"

@@ -11,7 +11,7 @@ public class DBUtility {
 	private static final String Driver= "org.postgresql.Driver";
 	private static final String ConnUrl= "jdbc:postgresql://144.92.235.47/cycleroutesdb";
 	private static final String Username = "postgres";
-	private static final String Password = "";
+	private static final String Password = "Ascendant_17";
 
 	
 	//This is a constructor
@@ -81,11 +81,12 @@ public class DBUtility {
 		}
 		*/
 		
-		//2. query the DB
-		ResultSet res =util.queryDB("select * from county_roads");
+		//2. query the DB TEST
+		ResultSet res =util.queryDB("SELECT str_name1 FROM d_roads");
 		while (res.next()){
-			System.out.println(res.getString("fname"));
+			System.out.println(res.getString("str_name1"));
 		}
+		
 		
 	}
 

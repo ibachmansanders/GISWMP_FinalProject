@@ -9,6 +9,7 @@
 <!-- Custom Styles -->
 <link rel="stylesheet" href="css/styles.css">
 
+<!--  jQuery -->
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.mim.js"></script>
 
@@ -45,43 +46,7 @@
       
     </div>
   </div>
-  
-  
-		<!--  <script>
-			window.onload =test_query();
-			function initialize(){
-				$.ajax({
-					url: 'HttpServlet',
-					type: 'POST',
-					success: function(data){
-						$.each(data, function(i, name){
-							alert("key: "+ i+ ", value: " + name);
-						});
-					},
-					error: function(xhr, status, error){
-						alert("An AJAX error occured: " + status + "\nError: " + error);
-					}
-				})
-			}
-			
-			function test_query(){
-				$.ajax({
-					url: 'HttpServlet',
-					type: 'POST',
-					data:{"fname": ""},
-					success: function(data){
-						$.each(data, function(i, e){
-							alert(JSON.stringify(e));
-						});
-					},
-					error: function(xhr, status, error){
-						alert("An AJAX error occured: " + status + "\nError: " + error);
-					}
-				});
-			}
-			
-		</script>
-		-->
-		<script src="js/loadmap.js"></script>
+
+	<script src="js/loadmap.js"></script>
 </body>
 </html>
