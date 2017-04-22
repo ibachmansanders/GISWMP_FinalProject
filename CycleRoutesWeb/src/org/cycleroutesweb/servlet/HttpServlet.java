@@ -108,24 +108,25 @@ private void loadLayerHelper(String sql, JSONArray list) throws SQLException{
 private void getGeotweets(HttpServletRequest request, HttpServletResponse response)throws JSONException, SQLException, IOException {
 	JSONArray list = new JSONArray();
 		
-		//call all geotweets from the DB using dbutil
-		String sql = "SELECT name,  longitude, latitude FROM geotweets";
-		DBUtility dbutil = new DBUtility();
-		
-		ResultSet res = dbutil.queryDB(sql);
-		
-		while (res.next()){
-			HashMap<String, String> m = new HashMap<String, String>();
-			m.put("name", res.getString("name"));
-			m.put("longitude", res.getString("longitude"));
-			m.put("latitude", res.getString("latitude"));
-			//TEST
-			System.out.println("GeoTweet: " + m);
-			list.put(m);
-		}
+	//call all geotweets from the DB using dbutil
+	String sql = "SELECT name,  longitude, latitude, text FROM geotweets";
+	DBUtility dbutil = new DBUtility();
 	
+	ResultSet res = dbutil.queryDB(sql);
 	
+	while (res.next()){
+		//get necessary tweet attributes
+		HashMap<String, String> m = new HashMap<String, String>();
+		m.put("name", res.getString("name"));
+		m.put("longitude", res.getString("longitude"));
+		m.put("latitude", res.getString("latitude"));
+		m.put("text",res.getString("text"));
+		//TEST
+		System.out.println("GeoTweet: " + m);
+		list.put(m);
+	}
 	
+	response.getWriter().write(list.toString());
 }	
 		
 }

@@ -9,18 +9,8 @@
 <!-- Custom Styles -->
 <link rel="stylesheet" href="css/styles.css">
 
-<!--  jQuery -->
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="//code.jquery.com/jquery-migrate-1.2.1.mim.js"></script>
-
 <!-- Bootstrap -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-
-<!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization"></script>
-
 
 
 </head>
@@ -33,20 +23,22 @@
     <div class="row">
     
       <div class="sidebar col-xs-3">
-        <ul class="nav nav-tabs">
-          <li><a href="#query_report" data-toggle="tab">Query</a></li>
-        </ul>
-        
-        <div class="tab-content ">
-          <div class="tab-pane" id="query_report"></div>
-        </div>
+        <button type="button" class="btn btn-default" id="toggleAttractions">Attractions</button>
+        <button type="button" class="btn btn-default" id="toggleTweets">Tweets</button>
       </div>
       
       <div id="map-canvas" class="col-xs-9"></div>
       
     </div>
   </div>
-
-	<script src="js/loadmap.js"></script>
+  
+<!--  jQuery -->
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!-- Bootstrap -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<!-- Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization"></script>
+<script src="js/loadmap.js"></script>
 </body>
 </html>
