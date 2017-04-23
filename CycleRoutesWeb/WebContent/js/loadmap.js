@@ -1,17 +1,46 @@
 
-var map;
+window.map; //make map globally available
 var tab_id;
+var attractionMarkers=[];
+var tweetMarkers=[];
 
 //TEST -this needs to be dynamic later
-tab_id={"tab_id":"1"};
+tab_id={"tab_id":"2"};
 
 function initialization() {
-  showSites(tab_id);
+	var mapOptions = {
+			mapTypeId : google.maps.MapTypeId.TERRAIN, // Set the type of Map
+	    };
+	  
+	  // Render the map within the empty div
+	  map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+	  
+	  showSites(tab_id);
 }
 
 function toggleLayer(id){
-	tab_id["tab_id"]=id;
-	showSites(tab_id);
+	//identify which type of markers you're working with, create variable for array
+	var markersArray;
+	if(id == "1"){
+		markersArray = attractionMarkers;
+	} else {
+		markersArray = tweetMarkers;
+	};
+
+	//IF the data hasn't been loaded yet, load it from the DB
+	if (id == "1" && markersArray.length == 0){
+		tab_id["tab_id"]=id;
+		showSites(tab_id);
+	} else if (id == "2" && markersArray.length == 0){
+		tab_id["tab_id"]=id;
+		showSites(tab_id);
+	} else { //all data loaded?  Toggle/reverse visibility.
+		//togglelayers (null) code
+		for(i=0; i < markersArray.length; i++){
+			if (markersArray[i].getMap() != null) {markersArray[i].setMap(null)}
+			else {markersArray[i].setMap(map)};
+		};
+	};
 }
 
 //onSubmit button fires attractions layer
@@ -33,27 +62,25 @@ function showSites(tab_id) {
 }
 
 function mapInitialization(sites) {
+	//TEST
 	console.log(sites);
-  var mapOptions = {
-    mapTypeId : google.maps.MapTypeId.ROADMAP, // Set the type of Map
-      	};
-  
-  // Render the map within the empty div
-  map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
   
   var bounds = new google.maps.LatLngBounds ();
   
   if (tab_id["tab_id"]=="1") {
-	  loadAttractions(sites,map,bounds); //if we're loading attractions, fire the function
+	  loadAttractions(sites,bounds); //if we're loading attractions, fire the function
   };
   if (tab_id["tab_id"]=="2") {
-	  loadGeoTweets(sites,map,bounds); //if we're loading attractions, fire the function
+	  loadGeoTweets(sites,bounds); //if we're loading attractions, fire the function
+  };
+  if (tab_id["tab_id"]=="3") {
+	  loadRoutes(sites,bounds);
   };
   
   map.fitBounds(bounds);
 }
 
-function loadAttractions(sites,map,bounds) {
+function loadAttractions(sites,bounds) {
   //only fires if sites have been specified
   if (sites.length>0){
 	  $.each(sites, function(i, e) {
@@ -76,6 +103,9 @@ function loadAttractions(sites,map,bounds) {
 			 position:latlng,
 			 map:map //adds the marker to the map
 		 });
+		 
+		 //add marker to the attractions array
+		 attractionMarkers.push(marker);
 		 
 		/*  
 		var start_point = Number(e['start_point']);
@@ -100,7 +130,7 @@ function loadAttractions(sites,map,bounds) {
 
 }
 
-function loadGeoTweets(sites,map,bounds) {
+function loadGeoTweets(sites,bounds) {
 	//only fires if sites have been specified
 	if (sites.length>0){
 		$.each(sites, function(i, e) {
@@ -120,8 +150,44 @@ function loadGeoTweets(sites,map,bounds) {
 				position:latlng,
 				map:map //adds the marker to the map
 			});
+			
+			//add marker to the tweets array
+			 tweetMarkers.push(marker);
 		});
 	};
+}
+
+function loadRoutes(sites,bounds) {
+	//only fires if sites have been specified
+	  if (sites.length>0){
+		  $.each(sites, function(i, e) {
+			  
+		    //response will be in String format, so parse to JSON
+		    e = JSON.parse(e["json"]);
+		
+		    //HOW TO HANDLE ROUTES?
+		    //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+		 
+		
+		    var start_point = Number(e['start_point']);
+		    var end_point = Number(e['end_point']);
+		    var road_segment = new google.maps.LatLng(start_point, end_point); 
+			
+			bounds.extend(latlng);
+			
+			// TODO Create the polylines
+			var road = new google.maps.Polyline({ // Set the marker
+				path: road_segment, 
+				geodesic: true,
+			    strokeColor: '#FF0000',
+			    strokeOpacity: 1.0,
+			    strokeWeight: 2,
+			});
+			road.setMap(map);
+    
+		    
+		  });
+	  };
 }
 
 

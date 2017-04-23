@@ -66,7 +66,6 @@ public class HttpServlet extends javax.servlet.http.HttpServlet {
 			System.out.println("adding tweets to map!");
 			try{
 				//reference method to add geoTweets
-				//TEST- later, this should be conditional
 				getGeotweets(request, response);
 
 			}catch (JSONException e){
@@ -74,7 +73,18 @@ public class HttpServlet extends javax.servlet.http.HttpServlet {
 			}catch (SQLException e){
 				e.printStackTrace();
 			}
-		} 
+		} else if (action_id.equals("3")){
+			System.out.println("adding route to map!");
+			try{
+				//reference method to add route
+				//TODO can we return 3 routes?
+				getPGRoute(request,response);
+			}catch (JSONException e){
+				e.printStackTrace();
+			}catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
 	}
 	
 private void loadAttractions (HttpServletRequest request, HttpServletResponse response)throws JSONException, SQLException, IOException {
@@ -98,6 +108,7 @@ private void loadLayerHelper(String sql, JSONArray list) throws SQLException{
 	ResultSet res = dbutil.queryDB(sql);
 	while(res.next()){
 		//add to response
+		//TODO add text, etc
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("json", res.getString("json"));
 		list.put(m);
@@ -121,12 +132,32 @@ private void getGeotweets(HttpServletRequest request, HttpServletResponse respon
 		m.put("longitude", res.getString("longitude"));
 		m.put("latitude", res.getString("latitude"));
 		m.put("text",res.getString("text"));
-		//TEST
-		System.out.println("GeoTweet: " + m);
 		list.put(m);
 	}
 	
 	response.getWriter().write(list.toString());
-}	
+}
+
+//load pgRoutes from DB
+private void getPGRoute(HttpServletRequest request, HttpServletResponse response)throws JSONException, SQLException, IOException {
+	JSONArray list = new JSONArray(); //for response
+		
+	//call a route from the DB using dbutil
+	String sql = "SELECT ST_Asgeojson(ST_Transform(geom, 4326)) as json FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost FROM d_roads', 200, 3000, false, false) as di JOIN d_roads pt ON di.id2 = pt.gid;";
+	DBUtility dbutil = new DBUtility();
+	
+	ResultSet res = dbutil.queryDB(sql);
+	
+	while (res.next()){
+		//get necessary tweet attributes
+		HashMap<String, String> m = new HashMap<String, String>();
+		m.put("json", res.getString("json"));
+		//TEST
+		System.out.println(m);
+		list.put(m);
+	}
+	
+	response.getWriter().write(list.toString());
+}
 		
 }
