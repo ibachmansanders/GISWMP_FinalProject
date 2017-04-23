@@ -5,7 +5,7 @@ var attractionMarkers=[];
 var tweetMarkers=[];
 
 //TEST -this needs to be dynamic later
-tab_id={"tab_id":"2"};
+tab_id={"tab_id":"3"};
 
 function initialization() {
 	var mapOptions = {
@@ -62,8 +62,6 @@ function showSites(tab_id) {
 }
 
 function mapInitialization(sites) {
-	//TEST
-	console.log(sites);
   
   var bounds = new google.maps.LatLngBounds ();
   
@@ -84,7 +82,7 @@ function loadAttractions(sites,bounds) {
   //only fires if sites have been specified
   if (sites.length>0){
 	  $.each(sites, function(i, e) {
-		  
+
 		  //response will be in String format, so parse to JSON
 		  e = JSON.parse(e["json"]);
 	
@@ -160,31 +158,61 @@ function loadGeoTweets(sites,bounds) {
 function loadRoutes(sites,bounds) {
 	//only fires if sites have been specified
 	  if (sites.length>0){
+		  //store route coordinates in an array - initialize it
+		  var routeCoord = [];
 		  $.each(sites, function(i, e) {
+			  console.log(e);
+			  //response will be in String format, so parse to JSON
+			  e = JSON.parse(e["json"]);
+			  			  
+			  //loop through coordinate arrays and capture lat lng
+			  for (i=0; i < e["coordinates"].length; i++) {
+				//create json object to hold coordinates
+				  var coord = {};
+				  //capture lat/lng from the e object
+				  lng = e["coordinates"][i][0];
+				  lat = e["coordinates"][i][1];
+				  //assign to json
+				  coord["lat"] = lat
+				  coord["lng"] = lng
+				  //push to array
+				  routeCoord.push(coord);
+				  
+				  //update map bounds
+				  var latlng = new google.maps.LatLng(lat,lng); //format
+				  bounds.extend(latlng); //adjust extent
+			  };
 			  
-		    //response will be in String format, so parse to JSON
-		    e = JSON.parse(e["json"]);
-		
-		    //HOW TO HANDLE ROUTES?
-		    //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+			  var bikeRoute = new google.maps.Polyline({
+				  path: routeCoord,
+				  geodesic: true,
+				  strokeColor: '#238b45',
+				  strokeOpacity: 1.0,
+				  strokeWeight: 2
+			  });
+			  
+			  bikeRoute.setMap(map);
+			  
+			  //HOW TO HANDLE ROUTES?
+			  //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
 		 
-		
-		    var start_point = Number(e['start_point']);
-		    var end_point = Number(e['end_point']);
-		    var road_segment = new google.maps.LatLng(start_point, end_point); 
+			  /*
+		      var start_point = Number(e['start_point']);
+		      var end_point = Number(e['end_point']);
+		      var road_segment = new google.maps.LatLng(start_point, end_point); 
 			
-			bounds.extend(latlng);
+			  bounds.extend(latlng);
 			
-			// TODO Create the polylines
-			var road = new google.maps.Polyline({ // Set the marker
-				path: road_segment, 
-				geodesic: true,
-			    strokeColor: '#FF0000',
-			    strokeOpacity: 1.0,
-			    strokeWeight: 2,
-			});
-			road.setMap(map);
-    
+			  // TODO Create the polylines
+			  var road = new google.maps.Polyline({ // Set the marker
+				  path: road_segment, 
+				  geodesic: true,
+			      strokeColor: '#FF0000',
+			      strokeOpacity: 1.0,
+			      strokeWeight: 2,
+			  });
+			  road.setMap(map);
+    		  */
 		    
 		  });
 	  };

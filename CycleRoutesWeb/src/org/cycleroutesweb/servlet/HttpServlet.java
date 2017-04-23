@@ -143,7 +143,7 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 	JSONArray list = new JSONArray(); //for response
 		
 	//call a route from the DB using dbutil
-	String sql = "SELECT ST_Asgeojson(ST_Transform(geom, 4326)) as json FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost FROM d_roads', 200, 3000, false, false) as di JOIN d_roads pt ON di.id2 = pt.gid;";
+	String sql = "SELECT ST_Asgeojson(ST_LineMerge(ST_Union(ST_Transform(geom, 4326)))) as json FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost FROM d_roads', 200, 3000, false, false) as di JOIN d_roads pt ON di.id2 = pt.gid;";
 	DBUtility dbutil = new DBUtility();
 	
 	ResultSet res = dbutil.queryDB(sql);
