@@ -25,6 +25,7 @@
       <div class="sidebar col-xs-3">
         <button type="button" class="btn btn-default" id="toggleAttractions">Attractions</button>
         <button type="button" class="btn btn-default" id="toggleTweets">Tweets</button>
+        <button type="button" class="btn btn-default" id="getDirections">Directions</button>
       </div>
       
       <div id="map-canvas" class="col-xs-9"></div>

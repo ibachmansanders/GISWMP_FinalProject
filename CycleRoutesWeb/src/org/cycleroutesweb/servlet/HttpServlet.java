@@ -75,10 +75,13 @@ public class HttpServlet extends javax.servlet.http.HttpServlet {
 			}
 		} else if (action_id.equals("3")){
 			System.out.println("adding route to map!");
+			//identify coordinates passed from map for source/target
+			Object sourceCoord = request.getParameter("sourceCoord");
+			Object targetCoord = request.getParameter("targetCoord");
 			try{
 				//reference method to add route
 				//TODO can we return 3 routes?
-				getPGRoute(request,response);
+				getPGRoute(request,response,sourceCoord,targetCoord);
 			}catch (JSONException e){
 				e.printStackTrace();
 			}catch (SQLException e){
@@ -91,7 +94,7 @@ private void loadAttractions (HttpServletRequest request, HttpServletResponse re
 	JSONArray list = new JSONArray();
 		
 	    //TEST load all attractions from the DB
-		String sql = "select ST_asText(geom) as geom, ST_AsGeoJSON(ST_Transform(geom, 4326)) as json from d_attractions";
+		String sql = "select ST_asText(geom) as geom, ST_AsGeoJSON(geom) as json from d_attractions_4326";
 		loadLayerHelper(sql,list);
 	
 	//write the queryReportHelper response (which is a JSONArray, called list) to a string (why?)
@@ -120,7 +123,9 @@ private void getGeotweets(HttpServletRequest request, HttpServletResponse respon
 	JSONArray list = new JSONArray();
 		
 	//call all geotweets from the DB using dbutil
-	String sql = "SELECT name,  longitude, latitude, text FROM geotweets";
+	String sql = "SELECT name,  longitude, latitude, text FROM geotweets_4326 "
+			+ "where st_dwithin((st_transform(geom,3857)),(st_transform("
+			+"st_setsrid(st_makepoint(-92.101098,46.785201),4326),3857)),32187)"; //selects Tweets w/in 20 miles (32187m) of Duluth center
 	DBUtility dbutil = new DBUtility();
 	
 	ResultSet res = dbutil.queryDB(sql);
@@ -139,14 +144,31 @@ private void getGeotweets(HttpServletRequest request, HttpServletResponse respon
 }
 
 //load pgRoutes from DB
-private void getPGRoute(HttpServletRequest request, HttpServletResponse response)throws JSONException, SQLException, IOException {
+private void getPGRoute(HttpServletRequest request, HttpServletResponse response, Object sourceCoord, Object targetCoord)throws JSONException, SQLException, IOException {
+	//we'll use this sql twice
+	String sql;
+	
+	System.out.println("IN GETROUTE source: "+sourceCoord+" target: "+targetCoord);
+	//get source and target IDs from the DB using DButility
+	//DBUtility dbutil1 = new DBUtility();
+	//roadIDRes = dbutil1.queryDB(sql);
+	
+	int source = 200;
+	int target = 3000;
+	System.out.println("source: " + source+" target: " + target);
+	
 	JSONArray list = new JSONArray(); //for response
 		
-	//call a route from the DB using dbutil
-	String sql = "SELECT ST_Asgeojson(ST_LineMerge(ST_Union(ST_Transform(geom, 4326)))) as json FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost FROM d_roads', 200, 3000, false, false) as di JOIN d_roads pt ON di.id2 = pt.gid;";
-	DBUtility dbutil = new DBUtility();
+	//call a route from the DB using dbutil TODO find the SQL that works with new geometries
+	sql = "SELECT ST_Asgeojson(ST_LineMerge(ST_Union(ST_Transform(geom, 4326)))) as json "
+            + "FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost FROM d_roads', "
+			+ source + ", "
+			+ target + ", false, false) "
+            + "as di JOIN d_roads pt ON di.id2 = pt.gid;";
 	
-	ResultSet res = dbutil.queryDB(sql);
+	DBUtility dbutil2 = new DBUtility();
+	
+	ResultSet res = dbutil2.queryDB(sql);
 	
 	while (res.next()){
 		//get necessary tweet attributes
