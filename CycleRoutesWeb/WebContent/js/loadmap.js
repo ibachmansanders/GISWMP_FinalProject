@@ -3,6 +3,7 @@
 
 window.map; //make map globally available
 var tab_id;
+var infoBox = new InfoBox();
 var attractionMarkers=[];
 var tweetMarkers=[];
 var routeCoord = [];
@@ -13,7 +14,6 @@ var targetCoord;
 tab_id=1;
 sourceCoord=[-92.2668331864009, 46.664920537164];
 targetCoord=[-92.0896507877466, 46.7749442920525];
-console.log("1: "+sourceCoord+", "+targetCoord);
 
 function initialization() {
 	var mapOptions = {
@@ -23,12 +23,14 @@ function initialization() {
 	  // Render the map within the empty div
 	  map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 	  
+	  google.maps.event.addListener(map, 'click', function() {
+          infoBox.close();
+      }); 
+	  
 	  showSites(tab_id,sourceCoord,targetCoord);
 }
 
 function toggleLayer(id){
-	//TEST
-	console.log("3: "+sourceCoord+", "+targetCoord);
 	//identify which type of markers you're working with, create variable for array
 	var markersArray;
 	if(id == "1"){
@@ -64,7 +66,6 @@ $("#toggleTweets").click(function(){toggleLayer("2")}); //same for tweets
 $("#getDirections").click(function(){toggleLayer("3")}); //same for directions
 
 function showSites(tab_id,sourceCoord,targetCoord) {
-	console.log("2: "+sourceCoord+", "+targetCoord);
 	var a = []; //empty data array;
 	//populate a with name:value pairs for HttpServlet
 	a.push({name: "tab_id",value: tab_id});
@@ -102,29 +103,28 @@ function mapInitialization(sites) {
 }
 
 function loadAttractions(sites,bounds) {
-  //only fires if sites have been specified
-  if (sites.length>0){
-	  $.each(sites, function(i, e) {
-
-		  //response will be in String format, so parse to JSON
-		  e = JSON.parse(e["json"]);
-	
-		  //isolate lat/lon
-		  var lat = e["coordinates"][1]; //collect lat/lng from coordinates
-		  var lng = e["coordinates"][0];
+	//only fires if sites have been specified
+	if (sites.length>0){
+		$.each(sites, function(i, e) {
+			//isolate name and text
+			var name = e["name"];
+			var text = e["text"];
+			var html = "<b>"+name+"</b><br>"+text;
+			var dataType = "attractions";
+			
+			//response will be in String format, so parse to JSON
+			e = JSON.parse(e["json"]);
+		
+			//isolate lat/lon
+			var lat = e["coordinates"][1]; //collect lat/lng from coordinates
+			var lng = e["coordinates"][0];
 		  
-		  //format points to set boundaries
-		 var latlng = new google.maps.LatLng(lat, lng);
+			//format points to set boundaries
+			var latlng = new google.maps.LatLng(lat, lng);
 		 
-		 bounds.extend(latlng);		  
-		 
-		 var marker = new google.maps.Marker({
-			 position:latlng,
-			 map:map //adds the marker to the map
-		 });
-		 
-		 //add marker to the attractions array
-		 attractionMarkers.push(marker);
+			bounds.extend(latlng);		  
+			
+			var marker = createMarker(latlng,name,html,dataType,attractionMarkers);
 	    
 	  });
   };
@@ -146,23 +146,90 @@ function loadGeoTweets(sites,bounds) {
 			//adjust map extent to fit markers
 			bounds.extend(latlng);
 			
-			//add marker to map
-			var marker = new google.maps.Marker({
-				position:latlng,
-				map:map //adds the marker to the map
-			});
+			//isolate name and text
+			var name = e["name"];
+			var text = e["text"];
+			var html = "<b>"+name+"</b><br>"+text;
+			var dataType = "tweets";
 			
-			//add marker to the tweets array
-			 tweetMarkers.push(marker);
+			var marker = createMarker(latlng,name,html,dataType,tweetMarkers);
+			
+
 		});
 	};
 }
+
+//Function to create a google marker and set up event window
+// from https://gist.github.com/phirework/4771983
+// removed "category" from function parameters since we don't categorize the tweets yet.
+//function createMarker(latlng, name, html, category) {
+function createMarker(latlng, name, html, dataType,markers) {
+    // block to make different marker symbols for the "dataType" parameter.
+    if (dataType == "tweets") {
+        var myIcon = {
+        		url: 'img/tweets.svg',
+        		scaledSize: new google.maps.Size(40,40),
+        }
+        var backgroundColor = "rgba(64,153,255,0.6)";
+        
+    } else if (dataType == "attractions") {
+        var myIcon = {
+        		url: 'img/attractions.svg',
+        		scaledSize: new google.maps.Size(40,40),
+        }
+        var backgroundColor = "rgba(120,120,120, 0.6)";
+    }        
+    
+    var boxText = document.createElement("div");
+    boxText.style.cssText = "margin-top: 42px; background: " + backgroundColor + "; padding: 10px; border-radius: 10px; color: #fff";
+    var fullContent = name 
+    boxText.innerHTML = html;
+
+    var myOptions = {
+        content: boxText,
+        disableAutoPan: false,
+        maxWidth: 0,
+        pixelOffset: new google.maps.Size(-125, -30),
+        zIndex: null,
+        boxStyle: { 
+            width: "250px",
+        },
+        closeBoxURL: "",
+        infoBoxClearance: new google.maps.Size(1, 1),
+        isHidden: false,
+        pane: "floatPane",
+        enableEventPropagation: false
+    };
+
+    var marker = new google.maps.Marker({
+        position: latlng,
+        //        icon: category + ".png",
+        icon: myIcon,
+        map: map,
+        title: name,
+        zIndex: Math.round(latlng.lat()*-100000)<<5
+    });
+
+    // === Store the category and name info as a marker properties ===
+    //      marker.mycategory = category;   
+    marker.html = html
+    marker.myname = name;
+
+    google.maps.event.addListener(marker, 'click', function() {
+        infoBox.setOptions(myOptions)
+        infoBox.open(map, this);
+    });
+    
+    //push marker to the current array
+    markers.push(marker);
+}; // end createMarker
 
 function loadRoutes(sites,bounds) {
 	//only fires if sites have been specified
 	  if (sites.length>0){
 		  //store route coordinates in an array - initialize it
 		  routeCoord = [];
+		  //TODO sites length should be 1 here, so should we get rid of $.each?
 		  $.each(sites, function(i, e) {
 			  //response will be in String format, so parse to JSON
 			  e = JSON.parse(e["json"]);
@@ -174,11 +241,9 @@ function loadRoutes(sites,bounds) {
 			  console.log(e["coordinates"][0]);
 			  console.log(e["coordinates"][e["coordinates"].length-1]);
 			  */
-			  			  
+
 			  //loop through coordinate arrays and capture lat lng
 			  for (i=0; i < e["coordinates"].length; i++) {
-				  console.log(e["coordinates"]);
-				//create json object to hold coordinates
 				  var coord = {};
 				  //capture lat/lng from the e object
 				  lng = e["coordinates"][i][0];
@@ -193,8 +258,6 @@ function loadRoutes(sites,bounds) {
 				  var latlng = new google.maps.LatLng(lat,lng); //format
 				  bounds.extend(latlng); //adjust extent
 			  };
-			  
-			  console.log(routeCoord);
 			  
 			  var bikeRoute = new google.maps.Polyline({
 				  path: routeCoord,
@@ -228,12 +291,12 @@ function loadRoutes(sites,bounds) {
 					  position:latlng,
 					  map:map //adds the marker to the map
 				  });
+				  
 			  });
 		    
 		  });
 	  };
 }
-
 
 //Execute our 'initialization' function once the page has loaded.
 google.maps.event.addDomListener(window, 'load', initialization);

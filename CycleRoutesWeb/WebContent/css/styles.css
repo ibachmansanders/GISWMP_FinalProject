@@ -19,7 +19,63 @@ form {
 }
 
 #map-canvas {
-  height:100%;
+  height:90%;
   position: absolute;
   right:0;
+}
+
+button {
+	position: absolute;
+	right: 1vw;
+	z-index: 1;
+	text-align: center;
+}
+
+#toggleAttractions {
+	top: 15vh;
+	height: 5vh;
+	width: 8vw;
+}
+#toggleTweets {
+	top: 20vh;
+	height: 5vh;
+	width: 8vw;
+}
+#getDirections {
+	top: 25vh;
+	height: 5vh;
+	width: 8vw;
+}
+
+form {
+	position: absolute;
+	float: left;
+	top: 10vh;
+	left: 1vw;
+	z-index: 2;
+}
+
+input[type=text], select {
+    width: 70%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 70%;
+    background-color: #4099FF;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
 }

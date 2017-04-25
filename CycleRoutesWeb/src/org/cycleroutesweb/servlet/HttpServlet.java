@@ -93,20 +93,9 @@ public class HttpServlet extends javax.servlet.http.HttpServlet {
 private void loadAttractions (HttpServletRequest request, HttpServletResponse response)throws JSONException, SQLException, IOException {
 	JSONArray list = new JSONArray();
 		
-	    //TEST load all attractions from the DB
-		String sql = "select ST_asText(geom) as geom, ST_AsGeoJSON(geom) as json from d_attractions_4326";
-		loadLayerHelper(sql,list);
-	
-	//write the queryReportHelper response (which is a JSONArray, called list) to a string (why?)
-	//writes that list to the response, sent to the app that called it (laodmap.js)
-	response.getWriter().write(list.toString());
-	System.out.println("queryReport response: "+list);
-}	
-
-
-private void loadLayerHelper(String sql, JSONArray list) throws SQLException{
+    // load all attractions from the DB
+	String sql = "SELECT name, desc_, ST_asText(geom) as geom, ST_AsGeoJSON(geom) as json from d_attractions_4326";
 	DBUtility dbutil = new DBUtility();
-	System.out.println("Servlet sql to DB: "+sql);
 	//send the sql to the DB, store in ResultSet res
 	ResultSet res = dbutil.queryDB(sql);
 	while(res.next()){
@@ -114,9 +103,16 @@ private void loadLayerHelper(String sql, JSONArray list) throws SQLException{
 		//TODO add text, etc
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("json", res.getString("json"));
+		m.put("name", res.getString("name"));
+		m.put("text", res.getString("desc_"));
 		list.put(m);
 	}
-}
+	
+	//write the queryReportHelper response (which is a JSONArray, called list) to a string (why?)
+	//writes that list to the response, sent to the app that called it (laodmap.js)
+	response.getWriter().write(list.toString());
+	System.out.println("queryReport response: "+list);
+}	
 
 //load geoTweets from DB
 private void getGeotweets(HttpServletRequest request, HttpServletResponse response)throws JSONException, SQLException, IOException {
@@ -148,27 +144,48 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 	//we'll use this sql twice
 	String sql;
 	
-	System.out.println("IN GETROUTE source: "+sourceCoord+" target: "+targetCoord);
-	//get source and target IDs from the DB using DButility
-	//DBUtility dbutil1 = new DBUtility();
-	//roadIDRes = dbutil1.queryDB(sql);
-	
-	int source = 200;
-	int target = 3000;
-	System.out.println("source: " + source+" target: " + target);
-	
+	//get source and target IDs from the DB using DButility based on coordinates passed from user!
+	int source;
+	int target;
+	//SOURCE
+	//sql query to get nearest road id to coord
+	sql = "SELECT source, ST_Distance(ST_Transform(geom, 4326),(ST_Setsrid(ST_Makepoint("
+			+ sourceCoord //passed from user
+			+ "),4326))) AS dist FROM d_roads "
+			+"ORDER BY dist LIMIT 1;";
+	//send sql to the DB to get source roadID
+	DBUtility dbutil1 = new DBUtility();
+	ResultSet sourceRes = dbutil1.queryDB(sql);
+	//access DB result, extract source roadID
+	while (sourceRes.next()){
+		source = sourceRes.getInt("source");
+	};
+	//TARGET
+	//sql query to get nearest road id to coord
+	sql = "SELECT target, ST_Distance(ST_Transform(geom, 4326),(ST_Setsrid(ST_Makepoint("
+			+ targetCoord //passed from user
+			+ "),4326))) AS dist FROM d_roads "
+			+"ORDER BY dist LIMIT 1;";
+	//send sql to the DB to get target roadID
+	DBUtility dbutil2 = new DBUtility();
+	ResultSet targetRes = dbutil2.queryDB(sql);
+	//access DB result, extract target roadID
+	while (targetRes.next()){
+		target = targetRes.getInt("target");
+	};
+
+
+	//call a route from the DB using dbutil TODO find the SQL that works with new geometries
 	JSONArray list = new JSONArray(); //for response
 		
-	//call a route from the DB using dbutil TODO find the SQL that works with new geometries
 	sql = "SELECT ST_Asgeojson(ST_LineMerge(ST_Union(ST_Transform(geom, 4326)))) as json "
-            + "FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost FROM d_roads', "
-			+ source + ", "
-			+ target + ", false, false) "
-            + "as di JOIN d_roads pt ON di.id2 = pt.gid;";
+			+ "FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost "
+			+ "FROM d_roads', 200, 3000, false, false) "
+			+ "as di JOIN d_roads pt ON di.id2 = pt.gid;";
 	
-	DBUtility dbutil2 = new DBUtility();
+	DBUtility dbutil3 = new DBUtility();
 	
-	ResultSet res = dbutil2.queryDB(sql);
+	ResultSet res = dbutil3.queryDB(sql);
 	
 	while (res.next()){
 		//get necessary tweet attributes
