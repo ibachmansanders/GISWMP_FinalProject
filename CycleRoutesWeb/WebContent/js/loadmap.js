@@ -1,19 +1,16 @@
-//wrap code in anon function
-(function() {
-
 window.map; //make map globally available
 var tab_id;
 var infoBox = new InfoBox();
 var attractionMarkers=[];
 var tweetMarkers=[];
-var routeCoord = [];
-var sourceCoord;
-var targetCoord;
+var routesArray = []; //holds routes
+var startMarkers = []; //holds start markers
+var endMarkers = []; //holds destination markers
+var sourceCoord = []; //holds start coordinates
+var targetCoord = []; //holds destination coordinates
 
 //TEST -this needs to be dynamic later
 tab_id=1;
-sourceCoord=[-92.2668331864009, 46.664920537164];
-targetCoord=[-92.0896507877466, 46.7749442920525];
 
 function initialization() {
 	var mapOptions = {
@@ -30,7 +27,7 @@ function initialization() {
 	showSites(tab_id,sourceCoord,targetCoord);
 }
 
-function toggleLayer(id){
+function toggleLayer(id,sourceCoord,targetCoord){
 	//identify which type of markers you're working with, create variable for array
 	var markersArray;
 	if(id == "1"){
@@ -38,7 +35,7 @@ function toggleLayer(id){
 	} else if (id == "2") {
 		markersArray = tweetMarkers;
 	} else {
-		markersArray = routeCoord; //directions button
+		markersArray = routesArray; //directions button
 	};
 
 	//IF the data hasn't been loaded yet, load it from the DB
@@ -49,6 +46,13 @@ function toggleLayer(id){
 		tab_id=id;
 		showSites(tab_id);
 	} else if (id == "3"){ //TODO YOU NEED TO HAVE A WAY TO RESET ROUTES
+		//make existing routes,route markers, tweets,and attractions null
+		var allArrays = [routesArray,startMarkers,endMarkers,tweetMarkers,attractionMarkers];
+		$.each(allArrays,function(i,e){
+			for(i=0;i<e.length;i++) {
+				if(e[i].getMap() != null) {e[i].setMap(null)};
+			};
+		});
 		tab_id=id;
 		showSites(tab_id,sourceCoord,targetCoord);
 	} else { //all data loaded?  Toggle/reverse visibility.
@@ -61,9 +65,9 @@ function toggleLayer(id){
 }
 
 //onSubmit button fires attractions layer
-$("#toggleAttractions").click(function(){toggleLayer("1")}); //once submit is clicked, show map with attractions
-$("#toggleTweets").click(function(){toggleLayer("2")}); //same for tweets
-$("#getDirections").click(function(){toggleLayer("3")}); //same for directions
+$("#toggleAttractions").click(function(){toggleLayer("1",sourceCoord,targetCoord)}); //once submit is clicked, show map with attractions
+$("#toggleTweets").click(function(){toggleLayer("2",sourceCoord,targetCoord)}); //same for tweets
+$("#getDirections").click(function(){toggleLayer("3",sourceCoord,targetCoord)}); //same for directions
 
 function showSites(tab_id,sourceCoord,targetCoord) {
 	var a = []; //empty data array;
@@ -178,7 +182,17 @@ function createMarker(latlng, name, html, dataType,markers) {
         		scaledSize: new google.maps.Size(40,40),
         }
         var backgroundColor = "rgba(120,120,120, 0.6)";
-    }        
+    } else if (dataType == "routeStart") {
+    	var myIcon = {
+    			url: 'img/routeStart.png',
+    	}
+    	var backgroundColor = "rgba(35,139,69,0.6)";
+    } else if (dataType == "routeEnd") {
+    	var myIcon = {
+    			url: 'img/routeEnd.png',
+    	}
+    	var backgroundColor = "rgba(35,139,69,0.6)";
+    }
 
     var marker = new google.maps.Marker({
         position: latlng,
@@ -197,19 +211,10 @@ function createMarker(latlng, name, html, dataType,markers) {
     marker.myname = name;
     
     google.maps.event.addListener(marker, 'click', function() {
-    	var myOptions = setInfoBoxOptions(latlng,name,html,backgroundColor)
-    	//TEST
-    	console.log("latlng: "+latlng);
+    	var myOptions = setInfoBoxOptions(latlng.lat(),latlng.lng(),name,html,backgroundColor,dataType) //NOTE that we have to pass latln.lat(), latlng.lng(), not latlng (which is a google object and not workable) for the functions to access both lat lng in the directions
         infoBox.setOptions(myOptions)
         infoBox.open(map, this);
         
-        /*
-        //TODO when startbutton/endbutton are clicked, fire getStartCoords or getEndCoords
-        var startButton = document.getElementById('#startbutton');
-        google.maps.event.addDomListener(startButton,'click',function(){
-        	window.alert('hurray!');
-        });
-        */
     });
     
     //push marker to the current array
@@ -218,7 +223,7 @@ function createMarker(latlng, name, html, dataType,markers) {
 
 
 //set up infoBox to include directions button, capture lat/lng
-function setInfoBoxOptions(latlng,name,html,backgroundColor) {
+function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
 	//create a div to style
 	var infoBoxDiv = document.createElement("div");
 	//style the div
@@ -226,14 +231,15 @@ function setInfoBoxOptions(latlng,name,html,backgroundColor) {
     var fullContent = name 
     infoBoxDiv.innerHTML = html; 
     
-    //create the start/end buttons
-    //NOTE the onclick functions!
-    console.log("setInfoBoxOptions latlng: "+latlng);
-    var startButton = "<p><button type='button' id='startbutton'>Ride from Here</button></p>";
-    var endButton = "<p><button type='button' id='endbutton'>Ride to Here</button></p>";
-    var addNavButtons = startButton + endButton;
-    //add them to the infoBox html
-    infoBoxDiv.innerHTML += addNavButtons;
+    if (dataType != "routeStart"&&dataType!="routeEnd") {
+	    //create the start/end buttons
+	    //NOTE the onclick functions!
+	    var startButton = "<p><button type='button' id='startbutton' onclick='getStartCoords("+lat+","+lng+")'>Ride from Here</button></p>";
+	    var endButton = "<p><button type='button' id='endbutton' onclick='getEndCoords("+lat+","+lng+")'>Ride to Here</button></p>";
+	    var addNavButtons = startButton + endButton;
+	    //add them to the infoBox html
+	    infoBoxDiv.innerHTML += addNavButtons;
+    };
     
     //configure options
     var infoBoxOptions = {
@@ -260,7 +266,7 @@ function loadRoutes(sites,bounds) {
 	//only fires if sites have been specified
 	  if (sites.length>0){
 		  //store route coordinates in an array - initialize it
-		  routeCoord = [];
+		  var routeCoord = [];
 		  //TODO sites length should be 1 here, so should we get rid of $.each?
 		  $.each(sites, function(i, e) {
 			  //response will be in String format, so parse to JSON
@@ -299,32 +305,34 @@ function loadRoutes(sites,bounds) {
 				  strokeWeight: 2
 			  });
 			  
+			  //add route to map
 			  bikeRoute.setMap(map);
+			  
+			  //add route to Array
+			  routesArray.push(bikeRoute);
 			  
 			  //marker start and end
 			  var start = e["coordinates"][0]; //isolate starting coordinates
-			  var end = e["coordinates"][e["coordinates"].length-1]; //isolate ending coordinates
-			  var ends = [start,end];
+			  //format coordinates for marker
+			  var latlng = new google.maps.LatLng(start[1],start[0]);	
+			  //define name and text
+			  var name = "Start";
+			  var length = google.maps.geometry.spherical.computeLength(bikeRoute.getPath()); //calculate route length using Google Geometry library
+			  var lengthMiles = Math.round(length*0.000621371*10)/10; //convert to miles
+			  var text = "Length: " + lengthMiles +" miles";
+			  var html = "<b>"+name+"</b><br>"+text;
+		  	  var dataType = "routeStart";
+			  createMarker(latlng,name,html,dataType,startMarkers);
 			  
-			  //TODO remove this- I think that origin and destination markers should remain on the map, and everything else should be removed (null), when the directions interaction begins
-			  $.each(ends, function(i, e) {
-				  //isolate lat/lon
-				  var lat = e[1]; //collect lat/lng from coordinates
-				  var lng = e[0];
-				  
-				  //format points to set boundaries
-				  var latlng = new google.maps.LatLng(lat, lng);
-				
-				  //adjust map extent to fit markers
-				  bounds.extend(latlng);
-					
-				  //add marker to map
-				  var marker = new google.maps.Marker({
-					  position:latlng,
-					  map:map //adds the marker to the map
-				  });
-				  
-			  });
+			  var end = e["coordinates"][e["coordinates"].length-1]; //isolate ending coordinates
+			  //format coordinates for marker
+			  latlng = new google.maps.LatLng(end[1],end[0]);	
+			  //define name and text
+			  name = "End";
+			  text = "Length: " + lengthMiles +" miles";
+			  html = "<b>"+name+"</b><br>"+text;
+		  	  dataType = "routeEnd";
+			  createMarker(latlng,name,html,dataType,endMarkers);
 		    
 		  });
 	  };
@@ -333,19 +341,18 @@ function loadRoutes(sites,bounds) {
 //Execute our 'initialization' function once the page has loaded.
 google.maps.event.addDomListener(window, 'load', initialization);
 
-})(); //end wrapping function
-
-
 //GLOBAL FUNCTIONS available to the html
-function getStartCoords(latlng) {
-	sourceCoord = latlng;
+function getStartCoords(lat,lng) {
+	sourceCoord = [lng,lat];
 	//TEST
 	console.log(sourceCoord);
+	$('#startbox').val(sourceCoord);//set start input field to show the coordinates
 }
 
-function getEndCoords(latlng) {
-	console.log("parameter: "+latlng);
-	targetCoord = latlng;
+function getEndCoords(lat,lng) {
+	targetCoord = [lng,lat];
 	//TEST
-	console.log("translated: "+targetCoord);
+	console.log(targetCoord);
+	$('#endbox').val(targetCoord); //set end input field to show the coordinates
 }
+

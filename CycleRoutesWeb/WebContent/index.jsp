@@ -23,12 +23,12 @@
     <div class="row">
 
       <button type="button" class="layerToggle btn btn-default" id="toggleAttractions">Attractions</button>
-      <button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>
-      <button type="button" class="layerToggle btn btn-default" id="getDirections">Directions</button>
+      <button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>    
       
       <form>
         <input type="text" id="startbox" placeholder="Click a starting map point...">
         <input type="text" id="endbox" placeholder="Click an ending map point...">
+        <button type="button" class="layerToggle btn btn-default" id="getDirections">Directions</button>
       </form>
 
       <div id="map-canvas" class="col-xs-12"></div>
@@ -42,7 +42,7 @@
 <!-- Bootstrap -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization,geometry"></script>
 <script type="text/javascript" src="lib/infobox/src/infobox.js"></script>
 <script src="js/loadmap.js"></script>
 </body>

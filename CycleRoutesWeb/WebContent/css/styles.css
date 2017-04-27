@@ -26,23 +26,25 @@ form {
 
 .layerToggle {
 	position: absolute;
-	right: 1vw;
 	z-index: 1;
 	text-align: center;
 }
 
 #toggleAttractions {
 	top: 15vh;
+	right: 1vw;
 	height: 5vh;
 	width: 8vw;
 }
 #toggleTweets {
 	top: 20vh;
+	right: 1vw;
 	height: 5vh;
 	width: 8vw;
 }
 #getDirections {
 	top: 25vh;
+	left: 0;
 	height: 5vh;
 	width: 8vw;
 }
@@ -50,7 +52,7 @@ form {
 form {
 	position: absolute;
 	float: left;
-	top: 10vh;
+	top: 12vh;
 	left: 1vw;
 	z-index: 2;
 }
@@ -78,4 +80,22 @@ input[type=submit] {
 
 input[type=submit]:hover {
     background-color: #45a049;
+}
+
+<!-- infoBox navButtons -->
+
+#startbutton {
+	background-color: #2ca25f;
+}
+
+#startbutton:hover {
+	background-color: #99d8c9;
+}
+
+#endbutton {
+	background-color: #e34a33;
+}
+
+#endbutton:hover {
+	background-color: #fdbb84;
 }
