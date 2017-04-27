@@ -20,14 +20,14 @@ function initialization() {
 			mapTypeId : google.maps.MapTypeId.TERRAIN, // Set the type of Map
 	    };
 	  
-	  // Render the map within the empty div
-	  map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+	// Render the map within the empty div
+	map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 	  
-	  google.maps.event.addListener(map, 'click', function() {
-          infoBox.close();
-      }); 
+	google.maps.event.addListener(map, 'click', function() {
+        infoBox.close();
+	}); 
 	  
-	  showSites(tab_id,sourceCoord,targetCoord);
+	showSites(tab_id,sourceCoord,targetCoord);
 }
 
 function toggleLayer(id){
@@ -179,27 +179,6 @@ function createMarker(latlng, name, html, dataType,markers) {
         }
         var backgroundColor = "rgba(120,120,120, 0.6)";
     }        
-    
-    var boxText = document.createElement("div");
-    boxText.style.cssText = "margin-top: 42px; background: " + backgroundColor + "; padding: 10px; border-radius: 10px; color: #fff";
-    var fullContent = name 
-    boxText.innerHTML = html;
-
-    var myOptions = {
-        content: boxText,
-        disableAutoPan: false,
-        maxWidth: 0,
-        pixelOffset: new google.maps.Size(-125, -30),
-        zIndex: null,
-        boxStyle: { 
-            width: "250px",
-        },
-        closeBoxURL: "",
-        infoBoxClearance: new google.maps.Size(1, 1),
-        isHidden: false,
-        pane: "floatPane",
-        enableEventPropagation: false
-    };
 
     var marker = new google.maps.Marker({
         position: latlng,
@@ -207,22 +186,75 @@ function createMarker(latlng, name, html, dataType,markers) {
         icon: myIcon,
         map: map,
         title: name,
-        zIndex: Math.round(latlng.lat()*-100000)<<5
+        zIndex: Math.round(latlng.lat()*-100000)<<5 //makes sure markers don't stack by latitude
     });
+    
+    //animate markers :)
+    marker.setAnimation(google.maps.Animation.DROP);
 
     // === Store the category and name info as a marker properties ===
-    //      marker.mycategory = category;   
-    marker.html = html
+    //      marker.mycategory = category; TODO? What is the purpose of this?  
     marker.myname = name;
-
+    
     google.maps.event.addListener(marker, 'click', function() {
+    	var myOptions = setInfoBoxOptions(latlng,name,html,backgroundColor)
+    	//TEST
+    	console.log("latlng: "+latlng);
         infoBox.setOptions(myOptions)
         infoBox.open(map, this);
+        
+        /*
+        //TODO when startbutton/endbutton are clicked, fire getStartCoords or getEndCoords
+        var startButton = document.getElementById('#startbutton');
+        google.maps.event.addDomListener(startButton,'click',function(){
+        	window.alert('hurray!');
+        });
+        */
     });
     
     //push marker to the current array
     markers.push(marker);
 }; // end createMarker
+
+
+//set up infoBox to include directions button, capture lat/lng
+function setInfoBoxOptions(latlng,name,html,backgroundColor) {
+	//create a div to style
+	var infoBoxDiv = document.createElement("div");
+	//style the div
+	infoBoxDiv.style.cssText = "margin-top: 30px; background: " + backgroundColor + "; padding: 10px; border-radius: 5px; color: #fff";
+    var fullContent = name 
+    infoBoxDiv.innerHTML = html; 
+    
+    //create the start/end buttons
+    //NOTE the onclick functions!
+    console.log("setInfoBoxOptions latlng: "+latlng);
+    var startButton = "<p><button type='button' id='startbutton'>Ride from Here</button></p>";
+    var endButton = "<p><button type='button' id='endbutton'>Ride to Here</button></p>";
+    var addNavButtons = startButton + endButton;
+    //add them to the infoBox html
+    infoBoxDiv.innerHTML += addNavButtons;
+    
+    //configure options
+    var infoBoxOptions = {
+            content: infoBoxDiv,
+            disableAutoPan: false,
+            maxWidth: 0,
+            pixelOffset: new google.maps.Size(-125, -30), //centers infobox on the marker
+            zIndex: null,
+            boxStyle: { 
+                width: "250px",
+            },
+            closeBoxURL: "",
+            infoBoxClearance: new google.maps.Size(1, 1),
+            isHidden: false,
+            pane: "floatPane",
+            enableEventPropagation: false
+        };
+    
+    return infoBoxOptions;
+}
+
 
 function loadRoutes(sites,bounds) {
 	//only fires if sites have been specified
@@ -302,3 +334,18 @@ function loadRoutes(sites,bounds) {
 google.maps.event.addDomListener(window, 'load', initialization);
 
 })(); //end wrapping function
+
+
+//GLOBAL FUNCTIONS available to the html
+function getStartCoords(latlng) {
+	sourceCoord = latlng;
+	//TEST
+	console.log(sourceCoord);
+}
+
+function getEndCoords(latlng) {
+	console.log("parameter: "+latlng);
+	targetCoord = latlng;
+	//TEST
+	console.log("translated: "+targetCoord);
+}

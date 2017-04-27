@@ -141,7 +141,6 @@ private void getGeotweets(HttpServletRequest request, HttpServletResponse respon
 
 //load pgRoutes from DB
 private void getPGRoute(HttpServletRequest request, HttpServletResponse response, Object sourceCoord, Object targetCoord)throws JSONException, SQLException, IOException {
-	//we'll use this sql twice
 	String sql;
 	
 	//get source and target IDs from the DB using DButility based on coordinates passed from user!
@@ -149,38 +148,18 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 	int target;
 	//SOURCE
 	//sql query to get nearest road id to coord
-	sql = "SELECT source, ST_Distance(ST_Transform(geom, 4326),(ST_Setsrid(ST_Makepoint("
-			+ sourceCoord //passed from user
-			+ "),4326))) AS dist FROM d_roads "
-			+"ORDER BY dist LIMIT 1;";
-	//send sql to the DB to get source roadID
-	DBUtility dbutil1 = new DBUtility();
-	ResultSet sourceRes = dbutil1.queryDB(sql);
-	//access DB result, extract source roadID
-	while (sourceRes.next()){
-		source = sourceRes.getInt("source");
-	};
+	String sqlSource = "(select source from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+sourceCoord+")),4326)),32615))) limit 1)";;
 	//TARGET
 	//sql query to get nearest road id to coord
-	sql = "SELECT target, ST_Distance(ST_Transform(geom, 4326),(ST_Setsrid(ST_Makepoint("
-			+ targetCoord //passed from user
-			+ "),4326))) AS dist FROM d_roads "
-			+"ORDER BY dist LIMIT 1;";
-	//send sql to the DB to get target roadID
-	DBUtility dbutil2 = new DBUtility();
-	ResultSet targetRes = dbutil2.queryDB(sql);
-	//access DB result, extract target roadID
-	while (targetRes.next()){
-		target = targetRes.getInt("target");
-	};
-
+	String sqlTarget = "(select target from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) limit 1)";
+	System.out.println("Source: "+sqlSource+" Target: "+sqlTarget);
 
 	//call a route from the DB using dbutil TODO find the SQL that works with new geometries
 	JSONArray list = new JSONArray(); //for response
 		
 	sql = "SELECT ST_Asgeojson(ST_LineMerge(ST_Union(ST_Transform(geom, 4326)))) as json "
 			+ "FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost "
-			+ "FROM d_roads', 200, 3000, false, false) "
+			+ "FROM d_roads', "+sqlSource+", "+sqlTarget+", false, false) "
 			+ "as di JOIN d_roads pt ON di.id2 = pt.gid;";
 	
 	DBUtility dbutil3 = new DBUtility();
@@ -188,7 +167,7 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 	ResultSet res = dbutil3.queryDB(sql);
 	
 	while (res.next()){
-		//get necessary tweet attributes
+		//get necessary route attributes
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("json", res.getString("json"));
 		//TEST

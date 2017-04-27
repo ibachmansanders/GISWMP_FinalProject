@@ -24,7 +24,7 @@ form {
   right:0;
 }
 
-button {
+.layerToggle {
 	position: absolute;
 	right: 1vw;
 	z-index: 1;

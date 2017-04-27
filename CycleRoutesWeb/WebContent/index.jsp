@@ -22,9 +22,9 @@
   <div class="container-fluid">
     <div class="row">
 
-      <button type="button" class="btn btn-default" id="toggleAttractions">Attractions</button>
-      <button type="button" class="btn btn-default" id="toggleTweets">Tweets</button>
-      <button type="button" class="btn btn-default" id="getDirections">Directions</button>
+      <button type="button" class="layerToggle btn btn-default" id="toggleAttractions">Attractions</button>
+      <button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>
+      <button type="button" class="layerToggle btn btn-default" id="getDirections">Directions</button>
       
       <form>
         <input type="text" id="startbox" placeholder="Click a starting map point...">
