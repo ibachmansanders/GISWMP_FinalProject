@@ -19,7 +19,7 @@ form {
 }
 
 #map-canvas {
-  height:90%;
+  height:92%;
   position: absolute;
   right:0;
 }
@@ -43,10 +43,12 @@ form {
 	width: 8vw;
 }
 #getDirections {
-	top: 25vh;
+	position: static;
 	left: 0;
-	height: 5vh;
-	width: 8vw;
+	padding: 12px 20px;
+	width: 20vw;
+	margin: 1vh 0;
+	background-color: #fc4e2a;
 }
 
 form {
@@ -58,33 +60,20 @@ form {
 }
 
 input[type=text], select {
-    width: 70%;
+    width: 20vw;
     padding: 12px 20px;
-    margin: 8px 0;
+    margin: 1vh 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
 }
 
-input[type=submit] {
-    width: 70%;
-    background-color: #4099FF;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+/* infoBox navButtons */
 
-input[type=submit]:hover {
-    background-color: #45a049;
-}
-
-<!-- infoBox navButtons -->
 
 #startbutton {
+	display:inline;
 	background-color: #2ca25f;
 }
 
@@ -93,9 +82,61 @@ input[type=submit]:hover {
 }
 
 #endbutton {
+	display:inline;
 	background-color: #e34a33;
 }
 
 #endbutton:hover {
 	background-color: #fdbb84;
+}
+
+
+
+/* side panel */
+
+#sidePanelContainer {
+	margin: 1vh 0;
+	background-color: white;
+	width: 20vw;
+	padding: 12px 20px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+}
+
+#introContent {
+	border-bottom: 1px solid #ccc;
+}
+
+#panelButton {
+	display:block;
+	margin: auto;
+	border: none;
+}
+
+.widgets {
+	position: absolute;
+	z-index: 100;
+	height: 5vh;
+	display:inline-block;
+	left:50%;
+	top: 90vh;
+	opacity: 0.75;
+}
+
+.widget:hover {
+	filter: invert(75%);
+	cursor: pointer;
+}
+
+#help,
+#locateMe {
+	display: inline-block;
+	float: right;
+}
+
+#helpImg, 
+#locateMeImg {
+	display: block;
+	margin: auto
 }

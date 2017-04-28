@@ -3,11 +3,13 @@ var tab_id;
 var infoBox = new InfoBox();
 var attractionMarkers=[];
 var tweetMarkers=[];
+var openMarkers = []; //holds user-made markers
 var routesArray = []; //holds routes
 var startMarkers = []; //holds start markers
 var endMarkers = []; //holds destination markers
 var sourceCoord = []; //holds start coordinates
 var targetCoord = []; //holds destination coordinates
+var geocoder = new google.maps.Geocoder; //to translate lat/lng into an address
 
 //TEST -this needs to be dynamic later
 tab_id=1;
@@ -23,9 +25,150 @@ function initialization() {
 	google.maps.event.addListener(map, 'click', function() {
         infoBox.close();
 	}); 
-	  
+	
+	//allow users to dblclick to create markers
+	createMark(map);
+	
+	//trigger start/endbox to autocomplete addresses
+	initAutocomplete();
+	
+	//allow users to enter addresses, and create a marker
+	var geocoder = new google.maps.Geocoder();
+	document.getElementById('startbox').addEventListener('keydown',function(e) {
+		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'enter key' - 13
+			geocodeAddress(geocoder,map,'startbox',sourceCoord);
+		}
+	});
+	document.getElementById('endbox').addEventListener('keydown',function(e) {
+		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'enter key' - 13
+			geocodeAddress(geocoder,map,'endbox',targetCoord);
+		}
+	});
+	
+	//populate sidePanel with welcomePanel info
+	welcomePanel();
+	
+	//setup widgets
+	widgets();
+	
 	showSites(tab_id,sourceCoord,targetCoord);
 }
+
+
+function widgets(){
+	//widget to display help info
+	var helpWidget = $("#help");
+	html = "<img src = 'img/help.png' id='helpImg' class='widget' alt='help'>";
+	helpWidget.html(html);
+	helpWidget.click(function(){
+		$("#panelButton").trigger("click");
+	});
+	//widget to allow user to locate self and use as starting point
+	var locateWidget = $("#locateMe");
+	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'>";
+	locateWidget.html(html);
+	locateWidget.click(function(){
+		userLocation();
+	});
+};
+
+
+
+function welcomePanel() {
+	var panelContent = $("#sidePanelContent");
+	var html = "<h2>Cycle Routes</h2><br><p>Find the safest bike route anywhere in the city of Duluth</p><br>Select start and endpoints by searching, clicking on sites, or double click anywhere to create your own destination</p>"
+	panelContent.html(html);
+}
+
+
+function initAutocomplete() { //gets set up on window load
+	autocompleteSource = new google.maps.places.Autocomplete(document.getElementById('startbox')); //create a Google Autocomplete object
+	autocompleteTarget =  new google.maps.places.Autocomplete(document.getElementById('endbox'));
+	//when user selects an address (place_changed), active onPlaceChanged function as the place option in autocomplete
+}
+
+
+//allow user to use GPS location as starting point
+function userLocation() {
+	//onClick, user is asked to allow to use location- IF it is allowed, create a marker at that point and set it as the start location
+	if(navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position){
+			var lat = position.coords.latitude;
+			var lng = position.coords.longitude;
+			var latlng = new google.maps.LatLng(lat,lng);
+			var name;
+			var text = "Coordinates: "+Math.round(lat*10000)/10000+", "+Math.round(lng*10000)/10000; //show to four decimals
+			var dataType = 'routeStart'; //don't show diretions to/from
+			var markers = openMarkers; //add these to the open markers
+			map.setCenter(latlng); //set center at your location
+			//use geocoder to find address location, use it as name and create marker
+			geocoder.geocode({'location': latlng}, function(results, status,name){
+				if (status === 'OK') { //if the geocode works
+					if (results[0]) { //if street address results exist
+						name = results[0].formatted_address;//set start input field to show the reversed-geocoded street address based on coords
+						var html = "<b>"+name+"</b><br>"+text;
+						marker= createMarker(latlng, name, html, dataType,markers);
+					} else if (results[1]) {
+						name = results[1].formatted_address;//set start input field to show the reversed-geocoded neighborhood based on coords
+						var html = "<b>"+name+"</b><br>"+text;
+						marker= createMarker(latlng, name, html, dataType,markers);
+					} else {
+						name = "Your Location";
+						var html = "<b>"+name+"</b><br>"+text;
+						marker= createMarker(latlng, name, html, dataType,markers);
+					};
+				};
+			});
+			getStartCoords(lat,lng); //send the marker coordinates to this function to populate the startbox text, georeferenced, and set sourceCoords etc.
+		});
+	};
+}
+
+
+function geocodeAddress(geocoder,map,box,whichCoord) {
+	var address = document.getElementById(box).value; //get address from input box (startbox or endbox)
+	geocoder.geocode({'address':address},function(results,status) { //geocode!
+		if(status === 'OK') { //if address geocodes succesfully:
+			map.setCenter(results[0].geometry.location); //center on address
+			//get latlng
+			var lat = results[0].geometry.location.lat();
+			var lng = results[0].geometry.location.lng();
+			var latlng = new google.maps.LatLng(lat,lng);
+			//set up marker parameters
+			var name = address;
+			var text = "Coordinates: "+Math.round(lat*10000)/10000+", "+Math.round(lng*10000)/10000; //show to four decimals
+			var html = "<b>"+name+"</b><br>"+text;
+			var dataType = "open"; //general markers- for styling
+			var markers = openMarkers;
+			var marker;
+			//create the marker, add it to the map
+			marker= createMarker(latlng, name, html, dataType,markers);
+			//set the target/source coord to this location
+			if (box == 'startbox') {sourceCoord = [lng,lat];};
+			if (box == 'endbox') {targetCoord = [lng,lat];};
+		}
+	})
+}
+
+
+function createMark(map) {
+	//create an anon marker on dblclick
+	google.maps.event.addListener(map, 'dblclick', function(event) { //listener
+		//get latlng
+		var lat = event.latLng.lat();
+		var lng = event.latLng.lng();
+		var latlng = new google.maps.LatLng(lat,lng);
+		//set up marker parameters
+		var name = "Eventually Reverse Geocoded";
+		var text = "Coordinates: "+Math.round(lat*10000)/10000+", "+Math.round(lng*10000)/10000; //show to four decimals
+		var html = "<b>"+name+"</b><br>"+text;
+		var dataType = "open"; //general markers- for styling
+		var markers = openMarkers;
+		var marker;
+		marker= createMarker(latlng, name, html, dataType,markers)
+	});
+}
+
 
 function toggleLayer(id,sourceCoord,targetCoord){
 	//identify which type of markers you're working with, create variable for array
@@ -47,7 +190,7 @@ function toggleLayer(id,sourceCoord,targetCoord){
 		showSites(tab_id);
 	} else if (id == "3"){ //TODO YOU NEED TO HAVE A WAY TO RESET ROUTES
 		//make existing routes,route markers, tweets,and attractions null
-		var allArrays = [routesArray,startMarkers,endMarkers,tweetMarkers,attractionMarkers];
+		var allArrays = [routesArray,startMarkers,endMarkers,tweetMarkers,attractionMarkers,openMarkers];
 		$.each(allArrays,function(i,e){
 			for(i=0;i<e.length;i++) {
 				if(e[i].getMap() != null) {e[i].setMap(null)};
@@ -192,6 +335,12 @@ function createMarker(latlng, name, html, dataType,markers) {
     			url: 'img/routeEnd.png',
     	}
     	var backgroundColor = "rgba(35,139,69,0.6)";
+    } else if (dataType == "open") {
+    	var myIcon = {
+    			url: 'img/open.svg',
+    			scaledSize: new google.maps.Size(40,40),
+    	}
+    	var backgroundColor = "rgba(35,139,69,0.6)";
     }
 
     var marker = new google.maps.Marker({
@@ -214,8 +363,10 @@ function createMarker(latlng, name, html, dataType,markers) {
     	var myOptions = setInfoBoxOptions(latlng.lat(),latlng.lng(),name,html,backgroundColor,dataType) //NOTE that we have to pass latln.lat(), latlng.lng(), not latlng (which is a google object and not workable) for the functions to access both lat lng in the directions
         infoBox.setOptions(myOptions)
         infoBox.open(map, this);
-        
     });
+    if (dataType == "open") { //IF the marker is user created, open it
+    	google.maps.event.trigger(marker, 'click');
+    };
     
     //push marker to the current array
     markers.push(marker);
@@ -234,8 +385,8 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
     if (dataType != "routeStart"&&dataType!="routeEnd") {
 	    //create the start/end buttons
 	    //NOTE the onclick functions!
-	    var startButton = "<p><button type='button' id='startbutton' onclick='getStartCoords("+lat+","+lng+")'>Ride from Here</button></p>";
-	    var endButton = "<p><button type='button' id='endbutton' onclick='getEndCoords("+lat+","+lng+")'>Ride to Here</button></p>";
+	    var endButton = "<button type='button' id='endbutton' class='btn btn-default' onclick='getEndCoords("+lat+","+lng+")'><img src = 'img/directionsEnd.png' class='directionsImg' alt='Ride to Here'></button>";
+	    var startButton = "<button type='button' id='startbutton' class='btn btn-default' onclick='getStartCoords("+lat+","+lng+")'><img src = 'img/directionsStart.png' class='directionsImg' alt='Ride from Here'></button>";
 	    var addNavButtons = startButton + endButton;
 	    //add them to the infoBox html
 	    infoBoxDiv.innerHTML += addNavButtons;
@@ -338,21 +489,40 @@ function loadRoutes(sites,bounds) {
 	  };
 }
 
-//Execute our 'initialization' function once the page has loaded.
-google.maps.event.addDomListener(window, 'load', initialization);
-
-//GLOBAL FUNCTIONS available to the html
+//IF YOU WRAP THIS IN AN ANON FUNCTION, getStartCoord/end need to be global...
 function getStartCoords(lat,lng) {
 	sourceCoord = [lng,lat];
 	//TEST
 	console.log(sourceCoord);
-	$('#startbox').val(sourceCoord);//set start input field to show the coordinates
+	reverseGeocode(lat,lng,'#startbox',sourceCoord);
 }
 
 function getEndCoords(lat,lng) {
 	targetCoord = [lng,lat];
 	//TEST
 	console.log(targetCoord);
-	$('#endbox').val(targetCoord); //set end input field to show the coordinates
+	reverseGeocode(lat,lng,'#endbox',targetCoord);
 }
 
+//reverse geocode code
+function reverseGeocode(lat,lng,targetString,targetVal){
+	var latlng = {lat: lat, lng: lng};
+	//reverse geocode location to address to display
+	geocoder.geocode({'location': latlng}, function(results, status){
+		if (status === 'OK') { //if the geocode works
+			if (results[0]) { //if street address results exist
+				$(targetString).val(results[0].formatted_address);//set start input field to show the reversed-geocoded street address based on coords
+			} else if (results[1]) {
+				$(targetString).val(results[1].formatted_address);//set start input field to show the reversed-geocoded neighborhood based on coords
+			} else {
+				$(targetString).val(targetVal);//geocoder found no results: set start input field to show the coordinates
+			};
+		} else {
+			$(targetString).val(targetVal); //geocoder failed: set start input field to show the coordinates
+		};
+	});
+}
+
+
+//Execute our 'initialization' function once the page has loaded.
+google.maps.event.addDomListener(window, 'load', initialization);

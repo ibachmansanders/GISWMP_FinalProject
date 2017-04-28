@@ -16,25 +16,38 @@
 </head>
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <a class="navbar-brand">Cycle Routes Duluth, MN</a>
-  </nav>
+	<a class="navbar-brand">Cycle Routes Duluth, MN</a>
+</nav>
   
-  <div class="container-fluid">
-    <div class="row">
-
-      <button type="button" class="layerToggle btn btn-default" id="toggleAttractions">Attractions</button>
-      <button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>    
-      
-      <form>
-        <input type="text" id="startbox" placeholder="Click a starting map point...">
-        <input type="text" id="endbox" placeholder="Click an ending map point...">
-        <button type="button" class="layerToggle btn btn-default" id="getDirections">Directions</button>
-      </form>
-
-      <div id="map-canvas" class="col-xs-12"></div>
-      
-    </div>
-  </div>
+<div class="container-fluid">
+	<div class="row">
+	
+		<button type="button" class="layerToggle btn btn-default" id="toggleAttractions">Attractions</button>
+		<button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>    
+		
+		<form>
+			<div><input type="text" id="startbox" placeholder="Start"></div>
+			<div><input type="text" id="endbox" placeholder="Destination"></div>
+			
+			<button type="button" class="layerToggle btn btn-default" id="getDirections">Directions</button>
+			
+			<div id="sidePanelContainer">
+				<div id = introContent>
+					<button type="button" id="panelButton" class="btn btn-default" data-toggle="collapse" data-target="#sidePanelContent"><img alt="collapse" id="panelButtonImg" src="img/hashArrow.png"></button>
+				</div>
+				<div id="sidePanelContent" class="collapse"></div>
+			</div>
+		</form>
+		
+		<div class="widgets">
+			<div id="help"></div>
+			<div id="locateMe"></div>
+		</div>
+		
+		<div id="map-canvas" class="col-xs-12"></div>
+	  
+	</div>
+</div>
   
 <!--  jQuery -->
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
