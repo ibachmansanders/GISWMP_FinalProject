@@ -1,0 +1,142 @@
+html,body{
+  background-color: #f5f5f5;
+}
+
+body {
+  padding-top: 50px;
+}
+
+.container-fluid, .row{
+  background-color: #f5f5f5;
+}
+.sidebar {
+  padding: 12px;
+  background-color: #f5f5f5;
+}
+
+form {
+  padding-top: 12px;
+}
+
+#map-canvas {
+  height:92%;
+  position: absolute;
+  right:0;
+}
+
+.layerToggle {
+	position: absolute;
+	z-index: 1;
+	text-align: center;
+}
+
+#toggleAttractions {
+	top: 15vh;
+	right: 1vw;
+	height: 5vh;
+	width: 8vw;
+}
+#toggleTweets {
+	top: 20vh;
+	right: 1vw;
+	height: 5vh;
+	width: 8vw;
+}
+#getDirections {
+	position: static;
+	left: 0;
+	padding: 12px 20px;
+	width: 20vw;
+	margin: 1vh 0;
+	background-color: #fc4e2a;
+}
+
+form {
+	position: absolute;
+	float: left;
+	top: 12vh;
+	left: 1vw;
+	z-index: 2;
+}
+
+input[type=text], select {
+    width: 20vw;
+    padding: 12px 20px;
+    margin: 1vh 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* infoBox navButtons */
+
+
+#startbutton {
+	display:inline;
+	background-color: #2ca25f;
+}
+
+#startbutton:hover {
+	background-color: #99d8c9;
+}
+
+#endbutton {
+	display:inline;
+	background-color: #e34a33;
+}
+
+#endbutton:hover {
+	background-color: #fdbb84;
+}
+
+
+
+/* side panel */
+
+#sidePanelContainer {
+	margin: 1vh 0;
+	background-color: white;
+	width: 20vw;
+	padding: 12px 20px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+}
+
+#introContent {
+	border-bottom: 1px solid #ccc;
+}
+
+#panelButton {
+	display:block;
+	margin: auto;
+	border: none;
+}
+
+.widgets {
+	position: absolute;
+	z-index: 100;
+	height: 5vh;
+	display:inline-block;
+	left:50%;
+	top: 90vh;
+	opacity: 0.75;
+}
+
+.widget:hover {
+	filter: invert(75%);
+	cursor: pointer;
+}
+
+#help,
+#locateMe {
+	display: inline-block;
+	float: right;
+}
+
+#helpImg, 
+#locateMeImg {
+	display: block;
+	margin: auto
+}
