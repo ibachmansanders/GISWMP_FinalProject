@@ -72,7 +72,11 @@ function widgets(){
 	});
 };
 
-
+function routePanel(text) {
+	var panelContent = $("#sidePanelContent");
+	var html = "<h3>Route Details</h3><p><br>" + text +"</p>";
+	panelContent.html(html);
+}
 
 function welcomePanel() {
 	var panelContent = $("#sidePanelContent");
@@ -158,14 +162,20 @@ function createMark(map) {
 		var lat = event.latLng.lat();
 		var lng = event.latLng.lng();
 		var latlng = new google.maps.LatLng(lat,lng);
-		//set up marker parameters
-		var name = "Eventually Reverse Geocoded";
-		var text = "Coordinates: "+Math.round(lat*10000)/10000+", "+Math.round(lng*10000)/10000; //show to four decimals
-		var html = "<b>"+name+"</b><br>"+text;
-		var dataType = "open"; //general markers- for styling
-		var markers = openMarkers;
-		var marker;
-		marker= createMarker(latlng, name, html, dataType,markers)
+		geocoder.geocode({'location': latlng},function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				var text = results[0].formatted_address;
+				//set up marker parameters
+				var name = "Address:";
+				var html = "<b>"+name+"</b><br>"+text+"<br>";
+				var dataType = "open"; //general markers- for styling
+				var markers = openMarkers;
+				var marker;
+				marker= createMarker(latlng, name, html, dataType, markers)
+			}else{
+				alert(status);
+			}
+		});
 	});
 }
 
@@ -456,6 +466,13 @@ function loadRoutes(sites,bounds) {
 				  strokeWeight: 2
 			  });
 			  
+			  var elevator = new google.maps.ElevationService;
+			  
+			  elevator.getElevationAlongPath({
+				  path: routeCoord,
+				  samples: 250}, showElevation);
+			  
+			  
 			  //add route to map
 			  bikeRoute.setMap(map);
 			  
@@ -484,9 +501,40 @@ function loadRoutes(sites,bounds) {
 			  html = "<b>"+name+"</b><br>"+text;
 		  	  dataType = "routeEnd";
 			  createMarker(latlng,name,html,dataType,endMarkers);
-		    
+			  routePanel(text);
 		  });
 	  };
+}
+//Takes an array of ElevationResult objects and plots the elevation profile on a Visualization API Column Chart
+function showElevation(elevations, status){
+	var chartDiv = document.getElementById('elevation_chart');
+    if (status !== 'OK') {
+      // Show the error code inside the chartDiv.
+      chartDiv.innerHTML = 'Cannot show elevation: request failed because ' +
+          status;
+      return;
+    }
+ // Create a new chart in the elevation_chart DIV.
+    var chart = new google.visualization.ColumnChart(chartDiv);
+
+    // Extract the data from which to populate the chart.
+    // Because the samples are equidistant, the 'Sample'
+    // column here does double duty as distance along the
+    // X axis.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Sample');
+    data.addColumn('number', 'Elevation');
+    for (var i = 0; i < elevations.length; i++) {
+      data.addRow(['', elevations[i].elevation]);
+    }
+
+    // Draw the chart using the data within its DIV.
+    chart.draw(data, {
+      height: 150,
+      legend: 'none',
+      titleY: 'Meters'
+    });
+
 }
 
 //IF YOU WRAP THIS IN AN ANON FUNCTION, getStartCoord/end need to be global...

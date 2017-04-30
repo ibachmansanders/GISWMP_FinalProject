@@ -6,12 +6,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Cycle Routes</title>
 
-<!-- Custom Styles -->
-<link rel="stylesheet" href="css/styles.css">
+<script src="https://www.google.com/jsapi"></script>
 
 <!-- Bootstrap -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
+<!-- Custom Styles -->
+<link rel="stylesheet" href="css/styles.css">
 
 </head>
 <body>
@@ -26,16 +27,24 @@
 		<button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>    
 		
 		<form>
-			<div><input type="text" id="startbox" placeholder="Start"></div>
-			<div><input type="text" id="endbox" placeholder="Destination"></div>
-			
-			<button type="button" class="layerToggle btn btn-default" id="getDirections">Directions</button>
-			
+						
 			<div id="sidePanelContainer">
 				<div id = introContent>
 					<button type="button" id="panelButton" class="btn btn-default" data-toggle="collapse" data-target="#sidePanelContent"><img alt="collapse" id="panelButtonImg" src="img/hashArrow.png"></button>
 				</div>
 				<div id="sidePanelContent" class="collapse"></div>
+				 	<div id="elevation_chart">
+      					<script>
+       					 // Load the Visualization API and the columnchart package.
+      						google.load('visualization', '1', {packages: ['columnchart']});
+     					 </script>
+					</div>
+        			
+				
+					<div><input type="text" id="startbox" placeholder="Start"></div>
+					<div><input type="text" id="endbox" placeholder="Destination"></div>
+			
+					<button type="button" class="layerToggle btn btn-default" id="getDirections">Map My Route</button>
 			</div>
 		</form>
 		
