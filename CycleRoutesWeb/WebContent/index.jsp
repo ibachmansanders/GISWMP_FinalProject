@@ -21,8 +21,10 @@
 <div class="container-fluid">
 	<div class="row">
 	
-		<button type="button" class="layerToggle btn btn-default" id="toggleAttractions"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</button>
-		<button type="button" class="layerToggle btn btn-default" id="toggleTweets"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</button>    
+		<nav class='menu-ui'>
+		  <a href='#' class='active' id="toggleAttractions"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
+		  <a href='#' id="toggleTweets"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</a>
+		</nav> 
 		
 		<form>
 			<div id="sidePanelContainer">

@@ -122,9 +122,9 @@ private void getGeotweets(HttpServletRequest request, HttpServletResponse respon
 	String sql = "SELECT name,  longitude, latitude, text FROM geotweets_4326 "
 			+ "where st_dwithin((st_transform(geom,3857)),(st_transform("
 			+"st_setsrid(st_makepoint(-92.101098,46.785201),4326),3857)),32187)"; //selects Tweets w/in 20 miles (32187m) of Duluth center
-	DBUtility dbutil = new DBUtility();
+	DBUtility dbutil2 = new DBUtility();
 	
-	ResultSet res = dbutil.queryDB(sql);
+	ResultSet res = dbutil2.queryDB(sql);
 	
 	while (res.next()){
 		//get necessary tweet attributes
@@ -144,15 +144,12 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 	String sql;
 	
 	//get source and target IDs from the DB using DButility based on coordinates passed from user!
-	int source;
-	int target;
 	//SOURCE
 	//sql query to get nearest road id to coord
 	String sqlSource = "(select source from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+sourceCoord+")),4326)),32615))) limit 1)";;
 	//TARGET
 	//sql query to get nearest road id to coord
 	String sqlTarget = "(select target from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) limit 1)";
-	System.out.println("Source: "+sqlSource+" Target: "+sqlTarget);
 
 	//call a route from the DB using dbutil TODO find the SQL that works with new geometries
 	JSONArray list = new JSONArray(); //for response

@@ -98,7 +98,7 @@ function welcomePanel() {
 	})
 	
 	var panelContent = $("#sidePanelContent");
-	var html = "<h2>Cycle Routes</h2><br><p>Find the safest bike route anywhere in the city of Duluth</p><br>Select start and endpoints by searching, clicking on sites, or double click anywhere to create your own destination</p>"
+	var html = "<h2>Cycle Routes</h2><br><p>This map will show you the safest and most enjoyable bike routes in Duluth.<br>Create routes by searching for an address address, selecting attractions or tweets on the map, or double clicking anywhere on the map to create your own destination.  Safe travels.</p>"
 	panelContent.html(html);
 }
 
@@ -237,8 +237,24 @@ function toggleLayer(id,sourceCoord,targetCoord){
 }
 
 //onSubmit button fires attractions layer
-$("#toggleAttractions").click(function(){toggleLayer("1",sourceCoord,targetCoord)}); //once submit is clicked, show map with attractions
-$("#toggleTweets").click(function(){toggleLayer("2",sourceCoord,targetCoord)}); //same for tweets
+$("#toggleAttractions").click(function(){
+	toggleLayer("1",sourceCoord,targetCoord);
+	if (attractionMarkers[0].getMap() != null) {
+		$(this).addClass("active");
+	} else {
+		$(this).removeClass("active");
+	};
+}); //once submit is clicked, show map with attractions
+$("#toggleTweets").click(function(){
+	toggleLayer("2",sourceCoord,targetCoord);
+	if(tweetMarkers.length == 0) {
+		$(this).addClass("active"); //for the first time tweets are loaded
+	} else if (tweetMarkers[0].getMap() != null) {
+		$(this).addClass("active");
+	} else {
+		$(this).removeClass("active");
+	};
+}); //same for tweets
 $("#getDirections").click(function(){toggleLayer("3",sourceCoord,targetCoord)}); //same for directions
 
 function showSites(tab_id,sourceCoord,targetCoord) {
@@ -525,15 +541,19 @@ function loadRoutes(sites,bounds) {
 			  html = "<b>"+name+"</b><br>"+text;
 		  	  dataType = "routeEnd";
 			  createMarker(latlng,name,html,dataType,endMarkers);
-			  routePanel();
 			  
 			  //capture elevation from google maps
 			  var elevator = new google.maps.ElevationService;
 			  
 			  //create elevation profile, with one entry for every routeCoord location
+			  //limit samples so graph doesn't crash
+			  var samples;
+			  if (routeCoord.length <= 500) {
+				  samples = routeCoord.length;
+			  } else {samples = 500};
 			  elevator.getElevationAlongPath({
 				  path: routeCoord,
-				  samples: routeCoord.length}, function(results, status) {
+				  samples: samples}, function(results, status) {
 					  showElevation(results, status, text, routeCoord);
 				  });
 		    
@@ -541,9 +561,9 @@ function loadRoutes(sites,bounds) {
 	  };
 }
 
-function routePanel() {
+function routePanel(lengthText,elevationText) {
 	var panelContent = $("#routePanelContent");
-	var html = "<h3>Route Details</h3>";
+	var html = "<h3>Route Details</h3><br><p>"+lengthText+"<br>"+elevationText+"</p>";
 	panelContent.html(html);
 }
 
@@ -568,11 +588,16 @@ function showElevation(results, status, text, routeCoord){
     	elevationPath.push(elevations[i].location); //push elevation data with location data to the array
     }
     
+    //store elevation in array for gain/loss
+    var elevationChange = [];
+    
     var data= new google.visualization.DataTable();
     data.addColumn('string', 'Sample');
     data.addColumn('number', 'Elevation');
     for (var i = 0; i < results.length; i++) {
-        data.addRow(['', Math.round((elevations[i].elevation)*3.28)]);
+    	var elev = Math.round((elevations[i].elevation)*3.28);
+        data.addRow(['', elev]);
+        elevationChange.push(elev);
     };
     
     var chartOptions = {
@@ -613,10 +638,27 @@ function showElevation(results, status, text, routeCoord){
 
     //add event handler to mouseOver chart
     google.visualization.events.addListener(chart, 'onmouseover', function(e) {
-    	var index = e["row"]-1; //find out how far along the route you  are
+    	var index = e["row"]-1; //find out how far along the route you  are, adjusted to count from 0
     	var latlng = routeCoord[index];
     	elevationMarker.setPosition(latlng);
     });
+    
+    //Populate the Route Details div
+    //calculate elevation gain and drop based on elevationChange, populated during the chart construction
+    var gain = 0;
+    var drop = 0;
+    var elevationText = '';
+    for (var i = 0; i < elevationChange.length-1; i++) {
+    	var next = i+1;
+    	var change = elevationChange[i]-elevationChange[next];
+    	if (change>0) {
+    		drop += change;
+    	} else {
+    		gain += change*-1;
+    	};
+    elevationText = "<p>Elevation gain : "+gain+" feet<br>Elevation drop: "+drop+" feet</p>"
+    }
+    routePanel(text,elevationText);
    
 }
 
