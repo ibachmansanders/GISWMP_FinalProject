@@ -81,23 +81,28 @@ input[type=text], select {
 
 /* infoBox navButtons */
 
-
 #startbutton {
 	display:inline;
-	background-color: #2ca25f;
+	background-color: rgba(44,162,95,0.8);
+	float: left;
+	margin-left: 1vw;
+	margin-top: 0.5vh;
 }
 
 #startbutton:hover {
-	background-color: #99d8c9;
+	background-color: rgba(153, 216, 201,0.8);
 }
 
 #endbutton {
 	display:inline;
-	background-color: #e34a33;
+	background-color: rgba(227, 74, 51,0.8);
+	float:right;
+	margin-right: 1vw;
+	margin-top: 0.5vh;
 }
 
 #endbutton:hover {
-	background-color: #fdbb84;
+	background-color: rgba(253, 187, 132,0.8);
 }
 
 
@@ -107,8 +112,8 @@ input[type=text], select {
 #sidePanelContainer {
 	margin: 1vh 0;
 	background-color: white;
-	width: 25vw;
-	padding: 12px 20px;
+	width: 22vw;
+	padding: 1vw 2vh;
 	border-radius: 4px;
 	border: 1px solid #ccc;
 	box-sizing: border-box;
@@ -120,17 +125,22 @@ input[type=text], select {
 
 #panelButton {
 	display:block;
-	margin: auto;
+	margin: 0.5vh auto;
 	border: none;
+	opacity: 0.75;
+}
+
+.widgets-wrapper {
+	width:5vw;
+	margin: auto;
+	display: inline-block;
 }
 
 .widgets {
-	position: absolute;
 	z-index: 100;
 	height: 5vh;
 	display:inline-block;
 	left:50%;
-	top: 90vh;
 	opacity: 0.75;
 }
 
