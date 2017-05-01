@@ -352,11 +352,17 @@ function createMarker(latlng, name, html, dataType,markers) {
     } else if (dataType == "routeStart") {
     	var myIcon = {
     			url: 'img/routeStart.png',
+    			scaledSize: new google.maps.Size(20,20),
+    			origin: new google.maps.Point(0,0),
+    			anchor: new google.maps.Point(10,10)
     	}
     	var backgroundColor = "rgba(44,162,95,0.8)";
     } else if (dataType == "routeEnd") {
     	var myIcon = {
     			url: 'img/routeEnd.png',
+    			scaledSize: new google.maps.Size(20,20),
+    			origin: new google.maps.Point(0,0),
+    			anchor: new google.maps.Point(10,10)
     	}
     	var backgroundColor = "rgba(44,162,95,0.8)";
     } else if (dataType == "open") {
@@ -421,7 +427,7 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
             content: infoBoxDiv,
             disableAutoPan: false,
             maxWidth: 0,
-            pixelOffset: new google.maps.Size(-125, -30), //centers infobox on the marker
+            pixelOffset: new google.maps.Size(-125, 30), //centers infobox on the marker
             zIndex: null,
             boxStyle: { 
                 width: "250px",
@@ -514,10 +520,11 @@ function loadRoutes(sites,bounds) {
 			  //capture elevation from google maps
 			  var elevator = new google.maps.ElevationService;
 			  
+			  //create elevation profile, with one entry for every routeCoord location
 			  elevator.getElevationAlongPath({
 				  path: routeCoord,
-				  samples: 300}, function(results, status) {
-					  showElevation(results, status, text);
+				  samples: routeCoord.length}, function(results, status) {
+					  showElevation(results, status, text, routeCoord);
 				  });
 		    
 		  });
@@ -531,7 +538,7 @@ function routePanel() {
 }
 
 //Takes an array of ElevationResult objects and plots the elevation profile on a Visualization API Column Chart
-function showElevation(results, status, text){
+function showElevation(results, status, text, routeCoord){
 	var chartDiv = document.getElementById('elevation_chart');
     if (status !== 'OK') {
       // Show the error code inside the chartDiv.
@@ -578,7 +585,29 @@ function showElevation(results, status, text){
     
     // Draw the chart using the data within its DIV.
     chart.draw(data, chartOptions);
+    
+    var elevIcon = {
+    		url: 'img/routeStart.png',
+    		scaledSize: new google.maps.Size(10,10),
+    		origin: new google.maps.Point(0,0),
+    		anchor: new google.maps.Point(5,5)
+    };
+    
+    var elevationMarker = new google.maps.Marker({
+    	position: {lat:0,lng:0},
+    	map:map,
+    	icon: elevIcon
+    });
+    
+    openMarkers.push(elevationMarker);
 
+    //add event handler to mouseOver chart
+    google.visualization.events.addListener(chart, 'onmouseover', function(e) {
+    	var index = e["row"]-1; //find out how far along the route you  are
+    	var latlng = routeCoord[index];
+    	elevationMarker.setPosition(latlng);
+    });
+   
 }
 
 //IF YOU WRAP THIS IN AN ANON FUNCTION, getStartCoord/end need to be global...

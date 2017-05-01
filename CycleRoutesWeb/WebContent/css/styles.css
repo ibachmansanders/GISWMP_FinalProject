@@ -131,9 +131,8 @@ input[type=text], select {
 }
 
 .widgets-wrapper {
-	width:5vw;
 	margin: auto;
-	display: inline-block;
+	width:20%;
 }
 
 .widgets {

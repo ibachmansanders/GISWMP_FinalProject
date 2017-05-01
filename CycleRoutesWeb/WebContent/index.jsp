@@ -25,12 +25,12 @@
 <div class="container-fluid">
 	<div class="row">
 	
-		<button type="button" class="layerToggle btn btn-default" id="toggleAttractions">Attractions</button>
-		<button type="button" class="layerToggle btn btn-default" id="toggleTweets">Tweets</button>    
+		<button type="button" class="layerToggle btn btn-default" id="toggleAttractions"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</button>
+		<button type="button" class="layerToggle btn btn-default" id="toggleTweets"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</button>    
 		
 		<form>
 			<div id="sidePanelContainer">
-				<div id = introContent>
+				<div id = "introContent">
 					<button type="button" id="panelButton" class="btn btn-default" data-toggle="collapse" data-target="#sidePanelContent"></button>
 				</div>
 				<div id="sidePanelContent"></div>
@@ -45,6 +45,13 @@
 			
 				<div><input type="text" id="startbox" placeholder="Start"></div>
 				<div><input type="text" id="endbox" placeholder="Destination"></div>
+				<!-- script to avoid crashes on reload of page by user -->
+				<script>
+                window.onload = function(){
+                     document.getElementById("startbox").value = "";
+                     document.getElementById('endbox').value="";
+                    };
+                </script>
 		
 				<button type="button" class="layerToggle btn btn-default" id="getDirections">Map My Route</button>
 				<div class="widgets-wrapper">
