@@ -19,6 +19,11 @@ tab_id=1;
 function initialization() {
 	var mapOptions = {
 			mapTypeId : google.maps.MapTypeId.TERRAIN, // Set the type of Map
+			mapTypeControl: true,
+		    mapTypeControlOptions: {
+		        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+		        position: google.maps.ControlPosition.BOTTOM_CENTER
+		    }
 	    };
 	  
 	// Render the map within the empty div
@@ -67,7 +72,7 @@ function widgets(){
 	});
 	//widget to allow user to locate self and use as starting point
 	var locateWidget = $("#locateMe");
-	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'>";
+	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'><p> Locate Me</p>";
 	locateWidget.html(html);
 	locateWidget.click(function(){
 		userLocation();
@@ -446,6 +451,11 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
 function loadRoutes(sites,bounds) {
 	//only fires if sites have been specified
 	  if (sites.length>0){
+		  //close the welcome panel
+		  if ($('#sidePanelContent').css('height') > "0px") {
+			  $("#panelButton").trigger("click");
+		  };
+		  
 		  //store route coordinates in an array - initialize it
 		  var routeCoord = [];
 		  //TODO sites length should be 1 here, so should we get rid of $.each?

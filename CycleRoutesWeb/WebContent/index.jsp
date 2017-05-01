@@ -18,10 +18,6 @@
 
 </head>
 <body>
-<nav class="navbar navbar-inverse navbar-fixed-top">
-	<a class="navbar-brand">Cycle Routes Duluth, MN</a>
-</nav>
-  
 <div class="container-fluid">
 	<div class="row">
 	
@@ -43,8 +39,8 @@
 				</div>
        			
 			
-				<div><input type="text" id="startbox" placeholder="Start"></div>
-				<div><input type="text" id="endbox" placeholder="Destination"></div>
+				<div class='inputContainer'><img src="img/directionsStart.png" class="dirIcon"><input type="text" id="startbox" placeholder="Start"></div>
+				<div class='inputContainer'><img src="img/directionsEnd.png" class="dirIcon"><input type="text" id="endbox" placeholder="Destination"></div>
 				<!-- script to avoid crashes on reload of page by user -->
 				<script>
                 window.onload = function(){
@@ -56,8 +52,8 @@
 				<button type="button" class="layerToggle btn btn-default" id="getDirections">Map My Route</button>
 				<div class="widgets-wrapper">
 					<div class="widgets">
-						<div id="help"></div>
 						<div id="locateMe"></div>
+						<div id="help"></div>
 					</div>
 				</div>
 			</div>
