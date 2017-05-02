@@ -25,8 +25,8 @@
 	<div class="row">
 	
 		<nav class='menu-ui'>
-		  <a href='#' class='active' id="toggleAttractions"><img src="img/attractions.svg" height="20vh" width ="20vw" data-step="3" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left">Attractions</a>
-		  <a href='#' id="toggleTweets"><img src="img/tweets.svg" height="20vh" width ="20vw" data-step="4" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left">Tweets</a>
+		  <a href='#' class='active' id="toggleAttractions" data-step="3" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
+		  <a href='#' id="toggleTweets" data-step="4" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left"><img src="img/tweets.svg" height="20vh" width ="20vw" >Tweets</a>
 		</nav> 
 		
 		<form data-step="1" data-intro="Click here to start mapping your route." data-position="right">
