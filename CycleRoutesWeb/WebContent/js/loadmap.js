@@ -272,7 +272,7 @@ function showSites(tab_id,sourceCoord,targetCoord) {
       	  mapInitialization(sites);
       },
       error: function(xhr, status, error) {
-    	  alert("LOADMAP An AJAX error occured: " + status + "\nError: " + error);
+    	  alert("That location is outside of Duluth.  Please select a location closer to the city.");
       }
 	});
 }
@@ -673,7 +673,6 @@ function loadRouteNames(sites,bounds) {
 	var stepByStep = $("#stepByStep");
 	stepByStep.html(html); //populate the HTML
 	stepByStep.css("display","block"); //show stepByStep
-	console.log(html);
 }
 
 function routePanel(lengthText,elevationText) {

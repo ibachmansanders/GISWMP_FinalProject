@@ -45,25 +45,19 @@ public class HttpServlet extends javax.servlet.http.HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		
-		System.out.println("Servlet Check 1");
 		//isolate the tab_id for the request
 		String action_id =request.getParameter("tab_id");
-		System.out.println(action_id);
-		System.out.println("Servlet Check 2");
 		
 		if (action_id.equals("1")){
-			System.out.println("adding attractions / or layer to map!");
 			try{
 				//query that should always run
 				loadAttractions(request,response);
-				System.out.println("ServletLoadLayerComplete");
 			} catch (JSONException e){
 				e.printStackTrace();
 			}catch (SQLException e){
 				e.printStackTrace();
 			}
 		} else if (action_id.equals("2")) {	//second conditional, if the user AJAX request identifies geotweet
-			System.out.println("adding tweets to map!");
 			try{
 				//reference method to add geoTweets
 				getGeotweets(request, response);
@@ -74,7 +68,6 @@ public class HttpServlet extends javax.servlet.http.HttpServlet {
 				e.printStackTrace();
 			}
 		} else if (action_id.equals("3")){
-			System.out.println("adding route to map!");
 			//identify coordinates passed from map for source/target
 			Object sourceCoord = request.getParameter("sourceCoord");
 			Object targetCoord = request.getParameter("targetCoord");
@@ -111,7 +104,6 @@ private void loadAttractions (HttpServletRequest request, HttpServletResponse re
 	//write the queryReportHelper response (which is a JSONArray, called list) to a string (why?)
 	//writes that list to the response, sent to the app that called it (laodmap.js)
 	response.getWriter().write(list.toString());
-	System.out.println("queryReport response: "+list);
 }	
 
 //load geoTweets from DB
@@ -154,7 +146,6 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 
 	//sql query to get nearest road id to coord
 	String sqlTarget = "(select target from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) limit 1)";
-	System.out.println("Source: "+sqlSource+" Target: "+sqlTarget);
 
 	//call a route from the DB using dbutil
 	JSONArray list = new JSONArray(); //for response
@@ -177,8 +168,6 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 		//get necessary route attributes
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("json", res.getString("json"));
-		//TEST
-		System.out.println(m);
 		list.put(m);
 		
 	}
@@ -191,8 +180,6 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 		//get necessary route attributes
 		HashMap<String, String> n = new HashMap<String, String>();
 		n.put("street", res2.getString("street"));
-		//TEST
-		System.out.println(n);
 		list.put(n);
 	}
 	
@@ -210,8 +197,6 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 			start = start+1;
 		}
 	}
-	
-	System.out.println(list);
 	
 	response.getWriter().write(list.toString());
 }
