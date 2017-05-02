@@ -39,6 +39,7 @@
    						google.load('visualization', '1', {packages: ['columnchart']});
    					 </script>
 				</div>
+				<div id="stepByStep"></div>
        			
 			
 				<div class='inputContainer'><img src="img/directionsStart.png" class="dirIcon"><input type="text" id="startbox" placeholder="Start"></div>

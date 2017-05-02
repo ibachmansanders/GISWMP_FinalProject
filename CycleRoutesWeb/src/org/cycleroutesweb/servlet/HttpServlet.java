@@ -142,19 +142,29 @@ private void getGeotweets(HttpServletRequest request, HttpServletResponse respon
 //load pgRoutes from DB
 private void getPGRoute(HttpServletRequest request, HttpServletResponse response, Object sourceCoord, Object targetCoord)throws JSONException, SQLException, IOException {
 	String sql;
+	String sql2;
+	Integer lsize;
+	Integer start;
+	Integer previous;
+	Object ststart;
+	Object stprevious;
 	
-	//get source and target IDs from the DB using DButility based on coordinates passed from user!
-	//SOURCE
 	//sql query to get nearest road id to coord
 	String sqlSource = "(select source from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+sourceCoord+")),4326)),32615))) limit 1)";;
-	//TARGET
+
 	//sql query to get nearest road id to coord
 	String sqlTarget = "(select target from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) limit 1)";
+	System.out.println("Source: "+sqlSource+" Target: "+sqlTarget);
 
-	//call a route from the DB using dbutil TODO find the SQL that works with new geometries
+	//call a route from the DB using dbutil
 	JSONArray list = new JSONArray(); //for response
 		
 	sql = "SELECT ST_Asgeojson(ST_LineMerge(ST_Union(ST_Transform(geom, 4326)))) as json "
+			+ "FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost "
+			+ "FROM d_roads', "+sqlSource+", "+sqlTarget+", false, false) "
+			+ "as di JOIN d_roads pt ON di.id2 = pt.gid;";
+	
+	sql2 = "SELECT str_name1 as street "
 			+ "FROM pgr_dijkstra('SELECT gid as id, source, target, st_length(geom)/ride_dens2 as cost "
 			+ "FROM d_roads', "+sqlSource+", "+sqlTarget+", false, false) "
 			+ "as di JOIN d_roads pt ON di.id2 = pt.gid;";
@@ -170,7 +180,38 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 		//TEST
 		System.out.println(m);
 		list.put(m);
+		
 	}
+		
+	DBUtility dbutil4 = new DBUtility();
+		
+	ResultSet res2 = dbutil4.queryDB(sql2);
+		
+	while (res2.next()){
+		//get necessary route attributes
+		HashMap<String, String> n = new HashMap<String, String>();
+		n.put("street", res2.getString("street"));
+		//TEST
+		System.out.println(n);
+		list.put(n);
+	}
+	
+	lsize = list.length();
+	start = 2;
+	
+	while (start <= lsize-1){
+		previous = (start-1);
+		ststart = list.get(start).toString();
+		stprevious = list.get(previous).toString();
+		if (ststart.equals(stprevious)){
+			list.remove(start);
+			lsize = lsize-1;
+		} else {
+			start = start+1;
+		}
+	}
+	
+	System.out.println(list);
 	
 	response.getWriter().write(list.toString());
 }

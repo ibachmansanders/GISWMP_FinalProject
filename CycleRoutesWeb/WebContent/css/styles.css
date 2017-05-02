@@ -15,55 +15,6 @@ body {
   right:0;
 }
 
-#getDirections {
-	position: static;
-	left: 0;
-	padding: 12px 20px;
-	width: 25vw;
-	margin: 1vh 0;
-	background-color: #2ca25f;
-	color: #ffffff;
-	font-weight: bold;
-	font-size: 1em;
-}
-
-#getDirections:hover {
-	background-color: rgba(153, 216, 201,0.8);
-	color: #525252;
-}
-
-form {
-	position: absolute;
-	float: left;
-	top: 2vh;
-	left: 1vw;
-	z-index: 2;
-}
-
-.dirIcon {
-	filter: invert(65%);
-	width: 4vw;
-	float: left;
-	padding-top: 3vh;
-	padding-right: 0.5vw;
-}
-
-.inputContainer {
-	display: inline-block;
-}
-
-input[type=text], select {
-    width: 20vw;
-    height: 6vh;
-    padding: 12px 20px;
-    margin: 1vh 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    float: right;
-}
-
 /* infoBox navButtons */
 
 #startbutton {
@@ -94,6 +45,14 @@ input[type=text], select {
 
 /* side panel */
 
+form {
+	position: absolute;
+	float: left;
+	top: 2vh;
+	left: 1vw;
+	z-index: 2;
+}
+
 #sidePanelContainer {
 	margin: 1vh 0;
 	background-color: white;
@@ -113,6 +72,62 @@ input[type=text], select {
 	margin: 0.5vh auto;
 	border: none;
 	opacity: 0.75;
+}
+
+#routePanelContent {
+	margin: 1vh;
+}
+
+#routePanelContent h3{
+	margin-bottom: 1vh;
+}
+
+#stepByStep{
+	display: none;
+	height: 10vh;
+	margin: 1vh;
+	overflow-y: scroll;
+}
+
+.dirIcon {
+	filter: invert(65%);
+	width: 4vw;
+	float: left;
+	padding-top: 3vh;
+	padding-right: 0.5vw;
+}
+
+#getDirections {
+	position: static;
+	left: 0;
+	padding: 12px 20px;
+	width: 25vw;
+	margin: 1vh 0;
+	background-color: #2ca25f;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 1em;
+}
+
+#getDirections:hover {
+	background-color: rgba(153, 216, 201,0.8);
+	color: #525252;
+}
+
+.inputContainer {
+	display: inline-block;
+}
+
+input[type=text], select {
+    width: 20vw;
+    height: 6vh;
+    padding: 12px 20px;
+    margin: 1vh 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    float: right;
 }
 
 .widgets-wrapper {
@@ -153,7 +168,8 @@ input[type=text], select {
 
 #helpImg {
 	float: right;
-	width: 1.5vw;
+	margin-top: 50%;
+	width: 1vw;
 }
 #locateMeImg {
 	float: left;
@@ -163,26 +179,6 @@ input[type=text], select {
 
 
 /*Style the filter menu*/
-.layerToggle {
-	position: absolute;
-	z-index: 1;
-	text-align: center;
-	height: 6vh;
-    padding: 12px 20px;
-    font-weight: bold;
-    font-size: 2em;
-}
-
-#toggleAttractions {
-	top: 2vh;
-	right: 1vw;
-	width: 10vw;
-}
-#toggleTweets {
-	top: 8vh;
-	right: 1vw;
-	width: 10vw;
-}
 
 .menu-ui {
     background:#fff;
@@ -203,6 +199,7 @@ input[type=text], select {
 	text-decoration:none;
 	border-bottom:1px solid rgba(0,0,0,0.25);
 	text-align:center;
+    font-size: 1em;
 }
 .menu-ui a:first-child {
 	border: none;

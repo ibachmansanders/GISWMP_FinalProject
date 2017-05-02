@@ -289,6 +289,7 @@ function mapInitialization(sites) {
   };
   if (tab_id=="3") {
 	  loadRoutes(sites,bounds);
+	  loadRouteNames(sites,bounds);
   };
   
   map.fitBounds(bounds);
@@ -477,94 +478,82 @@ function loadRoutes(sites,bounds) {
 		  //TODO sites length should be 1 here, so should we get rid of $.each?
 		  $.each(sites, function(i, e) {
 			  //response will be in String format, so parse to JSON
-			  e = JSON.parse(e["json"]);
-			  
-			  //TEST
-			  /*
-			  console.log(e);
-			  console.log(e["coordinates"].length);
-			  console.log(e["coordinates"][0]);
-			  console.log(e["coordinates"][e["coordinates"].length-1]);
-			  */
-
-			  //loop through coordinate arrays and capture lat lng
-			  for (i=0; i < e["coordinates"].length; i++) {
-				  var coord = {};
-				  //capture lat/lng from the e object
-				  lng = e["coordinates"][i][0];
-				  lat = e["coordinates"][i][1];
-				  //assign to json
-				  coord["lat"] = lat
-				  coord["lng"] = lng
-				  //push to array
-				  routeCoord.push(coord);
+			  if (e["json"]){
+				  e = JSON.parse(e["json"]);
+	
+				  //loop through coordinate arrays and capture lat lng
+				  for (i=0; i < e["coordinates"].length; i++) {
+					  var coord = {};
+					  //capture lat/lng from the e object
+					  lng = e["coordinates"][i][0];
+					  lat = e["coordinates"][i][1];
+					  //assign to json
+					  coord["lat"] = lat
+					  coord["lng"] = lng
+					  //push to array
+					  routeCoord.push(coord);
+					  
+					  //update map bounds
+					  var latlng = new google.maps.LatLng(lat,lng); //format
+					  bounds.extend(latlng); //adjust extent
+				  };
 				  
-				  //update map bounds
-				  var latlng = new google.maps.LatLng(lat,lng); //format
-				  bounds.extend(latlng); //adjust extent
-			  };
-			  
-			  var bikeRoute = new google.maps.Polyline({
-				  path: routeCoord,
-				  geodesic: true,
-				  strokeColor: '#238b45',
-				  strokeOpacity: 1.0,
-				  strokeWeight: 2
-			  });
-
-			  
-			  //add route to map
-			  bikeRoute.setMap(map);
-			  
-			  //add route to Array
-			  routesArray.push(bikeRoute);
-			  
-			  //marker start and end
-			  var start = e["coordinates"][0]; //isolate starting coordinates
-			  //format coordinates for marker
-			  var latlng = new google.maps.LatLng(start[1],start[0]);	
-			  //define name and text
-			  var name = "Start";
-			  var length = google.maps.geometry.spherical.computeLength(bikeRoute.getPath()); //calculate route length using Google Geometry library
-			  var lengthMiles = Math.round(length*0.000621371*10)/10; //convert to miles
-			  var text = "Length: " + lengthMiles +" miles";
-			  var html = "<b>"+name+"</b><br>"+text;
-		  	  var dataType = "routeStart";
-			  createMarker(latlng,name,html,dataType,startMarkers);
-			  
-			  var end = e["coordinates"][e["coordinates"].length-1]; //isolate ending coordinates
-			  //format coordinates for marker
-			  latlng = new google.maps.LatLng(end[1],end[0]);	
-			  //define name and text
-			  name = "End";
-			  text = "Length: " + lengthMiles +" miles";
-			  html = "<b>"+name+"</b><br>"+text;
-		  	  dataType = "routeEnd";
-			  createMarker(latlng,name,html,dataType,endMarkers);
-			  
-			  //capture elevation from google maps
-			  var elevator = new google.maps.ElevationService;
-			  
-			  //create elevation profile, with one entry for every routeCoord location
-			  //limit samples so graph doesn't crash
-			  var samples;
-			  if (routeCoord.length <= 500) {
-				  samples = routeCoord.length;
-			  } else {samples = 500};
-			  elevator.getElevationAlongPath({
-				  path: routeCoord,
-				  samples: samples}, function(results, status) {
-					  showElevation(results, status, text, routeCoord);
+				  var bikeRoute = new google.maps.Polyline({
+					  path: routeCoord,
+					  geodesic: true,
+					  strokeColor: '#238b45',
+					  strokeOpacity: 1.0,
+					  strokeWeight: 2
 				  });
+	
+				  
+				  //add route to map
+				  bikeRoute.setMap(map);
+				  
+				  //add route to Array
+				  routesArray.push(bikeRoute);
+				  
+				  //marker start and end
+				  var start = e["coordinates"][0]; //isolate starting coordinates
+				  //format coordinates for marker
+				  var latlng = new google.maps.LatLng(start[1],start[0]);	
+				  //define name and text
+				  var name = "Start";
+				  var length = google.maps.geometry.spherical.computeLength(bikeRoute.getPath()); //calculate route length using Google Geometry library
+				  var lengthMiles = Math.round(length*0.000621371*10)/10; //convert to miles
+				  var text = "Length: " + lengthMiles +" miles";
+				  var html = "<b>"+name+"</b><br>"+text;
+			  	  var dataType = "routeStart";
+				  createMarker(latlng,name,html,dataType,startMarkers);
+				  
+				  var end = e["coordinates"][e["coordinates"].length-1]; //isolate ending coordinates
+				  //format coordinates for marker
+				  latlng = new google.maps.LatLng(end[1],end[0]);	
+				  //define name and text
+				  name = "End";
+				  text = "Length: " + lengthMiles +" miles";
+				  html = "<b>"+name+"</b><br>"+text;
+			  	  dataType = "routeEnd";
+				  createMarker(latlng,name,html,dataType,endMarkers);
+				  
+				  //capture elevation from google maps
+				  var elevator = new google.maps.ElevationService;
+				  
+				  //create elevation profile, with one entry for every routeCoord location
+				  //limit samples so graph doesn't crash
+				  var samples;
+				  if (routeCoord.length <= 500) {
+					  samples = routeCoord.length;
+				  } else {samples = 500};
+				  elevator.getElevationAlongPath({
+					  path: routeCoord,
+					  samples: samples}, function(results, status) {
+						  showElevation(results, status, text, routeCoord);
+					  });
+			  }
 		    
 		  });
 	  };
-}
-
-function routePanel(lengthText,elevationText) {
-	var panelContent = $("#routePanelContent");
-	var html = "<h3>Route Details</h3><br><p>"+lengthText+"<br>"+elevationText+"</p>";
-	panelContent.html(html);
 }
 
 //Takes an array of ElevationResult objects and plots the elevation profile on a Visualization API Column Chart
@@ -656,11 +645,44 @@ function showElevation(results, status, text, routeCoord){
     	} else {
     		gain += change*-1;
     	};
-    elevationText = "<p>Elevation gain : "+gain+" feet<br>Elevation drop: "+drop+" feet</p>"
+    elevationText = "Elevation gain : "+gain+" feet<br>Elevation drop: "+drop+" feet"
     }
     routePanel(text,elevationText);
    
 }
+
+function loadRouteNames(sites,bounds) {
+	var streets = [];
+	var count = 0;
+	//only fires if sites have been specified
+	if (sites.length>0){
+		$.each(sites, function(i, e) {
+			if (e["street"]){
+				var street = e["street"];
+				streets.push(" "+count+". Follow "+ street);
+				count++;
+			}
+		});
+	};
+	
+	var html = '<p>';
+	for (var i = 1; i<streets.length; i++){
+		html += streets[i] + "<br>";
+	};
+	html += "</p>";
+	var stepByStep = $("#stepByStep");
+	stepByStep.html(html); //populate the HTML
+	stepByStep.css("display","block"); //show stepByStep
+	console.log(html);
+}
+
+function routePanel(lengthText,elevationText) {
+	var panelContent = $("#routePanelContent");
+	var html = "<h3>Route Details</h3><p>"+lengthText+"<br>"+elevationText+"</p>";
+	panelContent.html(html);
+}
+
+
 
 //IF YOU WRAP THIS IN AN ANON FUNCTION, getStartCoord/end need to be global...
 function getStartCoords(lat,lng) {
