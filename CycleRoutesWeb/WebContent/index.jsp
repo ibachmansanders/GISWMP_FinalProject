@@ -12,6 +12,9 @@
 <!-- Custom Styles -->
 <link rel="stylesheet" href="css/styles.css">
 
+<!-- Intro.js css for instructions -->
+<link href="css/introjs.css" rel="stylesheet">
+
 <!-- Bootstrap -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
@@ -22,11 +25,11 @@
 	<div class="row">
 	
 		<nav class='menu-ui'>
-		  <a href='#' class='active' id="toggleAttractions"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
-		  <a href='#' id="toggleTweets"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</a>
+		  <a href='#' class='active' id="toggleAttractions"><img src="img/attractions.svg" height="20vh" width ="20vw" data-step="3" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left">Attractions</a>
+		  <a href='#' id="toggleTweets"><img src="img/tweets.svg" height="20vh" width ="20vw" data-step="4" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left">Tweets</a>
 		</nav> 
 		
-		<form>
+		<form data-step="1" data-intro="Click here to start mapping your route." data-position="right">
 			<div id="sidePanelContainer">
 				<div id = "introContent">
 					<button type="button" id="panelButton" class="btn btn-default" data-toggle="collapse" data-target="#sidePanelContent"></button>
@@ -55,8 +58,8 @@
 				<button type="button" class="layerToggle btn btn-default" id="getDirections">Map My Route</button>
 				<div class="widgets-wrapper">
 					<div class="widgets">
-						<div id="locateMe"></div>
-						<div id="help"></div>
+						<div id="locateMe" data-step="2" data-intro="Locate yourself on the map." data-position="right"></div>
+						<div id="help" href="javascript:void(0);" onclick="javascript:introJs().start();"></div>
 					</div>
 				</div>
 			</div>
@@ -78,6 +81,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization,geometry"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="lib/infobox/src/infobox.js"></script>
+<script type="text/javascript" src="lib/intro.js"></script>    
 <script src="js/loadmap.js"></script>
 </body>
 </html>
