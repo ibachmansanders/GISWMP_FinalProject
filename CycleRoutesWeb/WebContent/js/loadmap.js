@@ -10,13 +10,20 @@ var endMarkers = []; //holds destination markers
 var sourceCoord = []; //holds start coordinates
 var targetCoord = []; //holds destination coordinates
 var geocoder = new google.maps.Geocoder; //to translate lat/lng into an address
+//load visualization packages
+google.charts.load('current', {'packages':['corechart']});
 
-//TEST -this needs to be dynamic later
+//set initial layer value
 tab_id=1;
 
 function initialization() {
 	var mapOptions = {
 			mapTypeId : google.maps.MapTypeId.TERRAIN, // Set the type of Map
+			mapTypeControl: true,
+		    mapTypeControlOptions: {
+		        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+		        position: google.maps.ControlPosition.BOTTOM_CENTER
+		    }
 	    };
 	  
 	// Render the map within the empty div
@@ -65,22 +72,33 @@ function widgets(){
 	});
 	//widget to allow user to locate self and use as starting point
 	var locateWidget = $("#locateMe");
-	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'>";
+	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'><p> Locate Me</p>";
 	locateWidget.html(html);
 	locateWidget.click(function(){
 		userLocation();
 	});
 };
 
-function routePanel(text) {
-	var panelContent = $("#sidePanelContent");
-	var html = "<h3>Route Details</h3><p><br>" + text +"</p>";
-	panelContent.html(html);
-}
-
 function welcomePanel() {
+	
+	var sidePanelContent = $('#sidePanelContent'); //panel content to collapse or show
+	sidePanelContent.collapse({toggle: true}); //avoids any errors onLoad for toggling the panel
+	var expandArrow = $("#panelButton");
+	expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">');
+	
+	expandArrow.click(function(){
+		if (expandArrow.html() == '<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">') {
+			expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrowDown.png">');
+			sidePanelContent.collapse("hide");
+		} else {
+			//TODO switch image in right conditional
+			expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">');
+			sidePanelContent.collapse("show");
+		};
+	})
+	
 	var panelContent = $("#sidePanelContent");
-	var html = "<h2>Cycle Routes</h2><br><p>Find the safest bike route anywhere in the city of Duluth</p><br>Select start and endpoints by searching, clicking on sites, or double click anywhere to create your own destination</p>"
+	var html = "<h2>Cycle Routes</h2><br><p>This map will show you the safest and most enjoyable bike routes in Duluth.<br>Create routes by searching for an address address, selecting attractions or tweets on the map, or double clicking anywhere on the map to create your own destination.  Safe travels.</p>"
 	panelContent.html(html);
 }
 
@@ -162,6 +180,7 @@ function createMark(map) {
 		var lat = event.latLng.lat();
 		var lng = event.latLng.lng();
 		var latlng = new google.maps.LatLng(lat,lng);
+		//set up marker parameters using geocoder
 		geocoder.geocode({'location': latlng},function(results, status) {
 			if (status == google.maps.GeocoderStatus.OK) {
 				var text = results[0].formatted_address;
@@ -218,8 +237,24 @@ function toggleLayer(id,sourceCoord,targetCoord){
 }
 
 //onSubmit button fires attractions layer
-$("#toggleAttractions").click(function(){toggleLayer("1",sourceCoord,targetCoord)}); //once submit is clicked, show map with attractions
-$("#toggleTweets").click(function(){toggleLayer("2",sourceCoord,targetCoord)}); //same for tweets
+$("#toggleAttractions").click(function(){
+	toggleLayer("1",sourceCoord,targetCoord);
+	if (attractionMarkers[0].getMap() != null) {
+		$(this).addClass("active");
+	} else {
+		$(this).removeClass("active");
+	};
+}); //once submit is clicked, show map with attractions
+$("#toggleTweets").click(function(){
+	toggleLayer("2",sourceCoord,targetCoord);
+	if(tweetMarkers.length == 0) {
+		$(this).addClass("active"); //for the first time tweets are loaded
+	} else if (tweetMarkers[0].getMap() != null) {
+		$(this).addClass("active");
+	} else {
+		$(this).removeClass("active");
+	};
+}); //same for tweets
 $("#getDirections").click(function(){toggleLayer("3",sourceCoord,targetCoord)}); //same for directions
 
 function showSites(tab_id,sourceCoord,targetCoord) {
@@ -237,7 +272,7 @@ function showSites(tab_id,sourceCoord,targetCoord) {
       	  mapInitialization(sites);
       },
       error: function(xhr, status, error) {
-    	  alert("LOADMAP An AJAX error occured: " + status + "\nError: " + error);
+    	  alert("That location is outside of Duluth.  Please select a location closer to the city.");
       }
 	});
 }
@@ -254,6 +289,7 @@ function mapInitialization(sites) {
   };
   if (tab_id=="3") {
 	  loadRoutes(sites,bounds);
+	  loadRouteNames(sites,bounds);
   };
   
   map.fitBounds(bounds);
@@ -327,30 +363,36 @@ function createMarker(latlng, name, html, dataType,markers) {
         		url: 'img/tweets.svg',
         		scaledSize: new google.maps.Size(40,40),
         }
-        var backgroundColor = "rgba(64,153,255,0.6)";
+        var backgroundColor = "rgba(64,153,255,0.8)";
         
     } else if (dataType == "attractions") {
         var myIcon = {
         		url: 'img/attractions.svg',
         		scaledSize: new google.maps.Size(40,40),
         }
-        var backgroundColor = "rgba(120,120,120, 0.6)";
+        var backgroundColor = "rgba(120,120,120, 0.8)";
     } else if (dataType == "routeStart") {
     	var myIcon = {
     			url: 'img/routeStart.png',
+    			scaledSize: new google.maps.Size(20,20),
+    			origin: new google.maps.Point(0,0),
+    			anchor: new google.maps.Point(10,10)
     	}
-    	var backgroundColor = "rgba(35,139,69,0.6)";
+    	var backgroundColor = "rgba(44,162,95,0.8)";
     } else if (dataType == "routeEnd") {
     	var myIcon = {
     			url: 'img/routeEnd.png',
+    			scaledSize: new google.maps.Size(20,20),
+    			origin: new google.maps.Point(0,0),
+    			anchor: new google.maps.Point(10,10)
     	}
-    	var backgroundColor = "rgba(35,139,69,0.6)";
+    	var backgroundColor = "rgba(44,162,95,0.8)";
     } else if (dataType == "open") {
     	var myIcon = {
     			url: 'img/open.svg',
     			scaledSize: new google.maps.Size(40,40),
     	}
-    	var backgroundColor = "rgba(35,139,69,0.6)";
+    	var backgroundColor = "rgba(44,162,95,0.8)";
     }
 
     var marker = new google.maps.Marker({
@@ -388,7 +430,7 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
 	//create a div to style
 	var infoBoxDiv = document.createElement("div");
 	//style the div
-	infoBoxDiv.style.cssText = "margin-top: 30px; background: " + backgroundColor + "; padding: 10px; border-radius: 5px; color: #fff";
+	infoBoxDiv.style.cssText = "margin: auto; background: " + backgroundColor + "; padding: 10px; border-radius: 5px; color: #fff; display: inline-block;";
     var fullContent = name 
     infoBoxDiv.innerHTML = html; 
     
@@ -396,7 +438,7 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
 	    //create the start/end buttons
 	    //NOTE the onclick functions!
 	    var endButton = "<button type='button' id='endbutton' class='btn btn-default' onclick='getEndCoords("+lat+","+lng+")'><img src = 'img/directionsEnd.png' class='directionsImg' alt='Ride to Here'></button>";
-	    var startButton = "<button type='button' id='startbutton' class='btn btn-default' onclick='getStartCoords("+lat+","+lng+")'><img src = 'img/directionsStart.png' class='directionsImg' alt='Ride from Here'></button>";
+	    var startButton = "<br><button type='button' id='startbutton' class='btn btn-default' onclick='getStartCoords("+lat+","+lng+")'><img src = 'img/directionsStart.png' class='directionsImg' alt='Ride from Here'></button>";
 	    var addNavButtons = startButton + endButton;
 	    //add them to the infoBox html
 	    infoBoxDiv.innerHTML += addNavButtons;
@@ -407,7 +449,7 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
             content: infoBoxDiv,
             disableAutoPan: false,
             maxWidth: 0,
-            pixelOffset: new google.maps.Size(-125, -30), //centers infobox on the marker
+            pixelOffset: new google.maps.Size(-125, 30), //centers infobox on the marker
             zIndex: null,
             boxStyle: { 
                 width: "250px",
@@ -426,87 +468,96 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
 function loadRoutes(sites,bounds) {
 	//only fires if sites have been specified
 	  if (sites.length>0){
+		  //close the welcome panel
+		  if ($('#sidePanelContent').css('height') > "0px") {
+			  $("#panelButton").trigger("click");
+		  };
+		  
 		  //store route coordinates in an array - initialize it
 		  var routeCoord = [];
 		  //TODO sites length should be 1 here, so should we get rid of $.each?
 		  $.each(sites, function(i, e) {
 			  //response will be in String format, so parse to JSON
-			  e = JSON.parse(e["json"]);
-			  
-			  //TEST
-			  /*
-			  console.log(e);
-			  console.log(e["coordinates"].length);
-			  console.log(e["coordinates"][0]);
-			  console.log(e["coordinates"][e["coordinates"].length-1]);
-			  */
-
-			  //loop through coordinate arrays and capture lat lng
-			  for (i=0; i < e["coordinates"].length; i++) {
-				  var coord = {};
-				  //capture lat/lng from the e object
-				  lng = e["coordinates"][i][0];
-				  lat = e["coordinates"][i][1];
-				  //assign to json
-				  coord["lat"] = lat
-				  coord["lng"] = lng
-				  //push to array
-				  routeCoord.push(coord);
+			  if (e["json"]){
+				  e = JSON.parse(e["json"]);
+	
+				  //loop through coordinate arrays and capture lat lng
+				  for (i=0; i < e["coordinates"].length; i++) {
+					  var coord = {};
+					  //capture lat/lng from the e object
+					  lng = e["coordinates"][i][0];
+					  lat = e["coordinates"][i][1];
+					  //assign to json
+					  coord["lat"] = lat
+					  coord["lng"] = lng
+					  //push to array
+					  routeCoord.push(coord);
+					  
+					  //update map bounds
+					  var latlng = new google.maps.LatLng(lat,lng); //format
+					  bounds.extend(latlng); //adjust extent
+				  };
 				  
-				  //update map bounds
-				  var latlng = new google.maps.LatLng(lat,lng); //format
-				  bounds.extend(latlng); //adjust extent
-			  };
-			  
-			  var bikeRoute = new google.maps.Polyline({
-				  path: routeCoord,
-				  geodesic: true,
-				  strokeColor: '#238b45',
-				  strokeOpacity: 1.0,
-				  strokeWeight: 2
-			  });
-			  
-			  var elevator = new google.maps.ElevationService;
-			  
-			  elevator.getElevationAlongPath({
-				  path: routeCoord,
-				  samples: 250}, showElevation);
-			  
-			  
-			  //add route to map
-			  bikeRoute.setMap(map);
-			  
-			  //add route to Array
-			  routesArray.push(bikeRoute);
-			  
-			  //marker start and end
-			  var start = e["coordinates"][0]; //isolate starting coordinates
-			  //format coordinates for marker
-			  var latlng = new google.maps.LatLng(start[1],start[0]);	
-			  //define name and text
-			  var name = "Start";
-			  var length = google.maps.geometry.spherical.computeLength(bikeRoute.getPath()); //calculate route length using Google Geometry library
-			  var lengthMiles = Math.round(length*0.000621371*10)/10; //convert to miles
-			  var text = "Length: " + lengthMiles +" miles";
-			  var html = "<b>"+name+"</b><br>"+text;
-		  	  var dataType = "routeStart";
-			  createMarker(latlng,name,html,dataType,startMarkers);
-			  
-			  var end = e["coordinates"][e["coordinates"].length-1]; //isolate ending coordinates
-			  //format coordinates for marker
-			  latlng = new google.maps.LatLng(end[1],end[0]);	
-			  //define name and text
-			  name = "End";
-			  text = "Length: " + lengthMiles +" miles";
-			  html = "<b>"+name+"</b><br>"+text;
-		  	  dataType = "routeEnd";
-			  createMarker(latlng,name,html,dataType,endMarkers);
-			  routePanel(text);
+				  var bikeRoute = new google.maps.Polyline({
+					  path: routeCoord,
+					  geodesic: true,
+					  strokeColor: '#238b45',
+					  strokeOpacity: 1.0,
+					  strokeWeight: 2
+				  });
+	
+				  
+				  //add route to map
+				  bikeRoute.setMap(map);
+				  
+				  //add route to Array
+				  routesArray.push(bikeRoute);
+				  
+				  //marker start and end
+				  var start = e["coordinates"][0]; //isolate starting coordinates
+				  //format coordinates for marker
+				  var latlng = new google.maps.LatLng(start[1],start[0]);	
+				  //define name and text
+				  var name = "Start";
+				  var length = google.maps.geometry.spherical.computeLength(bikeRoute.getPath()); //calculate route length using Google Geometry library
+				  var lengthMiles = Math.round(length*0.000621371*10)/10; //convert to miles
+				  var text = "Length: " + lengthMiles +" miles";
+				  var html = "<b>"+name+"</b><br>"+text;
+			  	  var dataType = "routeStart";
+				  createMarker(latlng,name,html,dataType,startMarkers);
+				  
+				  var end = e["coordinates"][e["coordinates"].length-1]; //isolate ending coordinates
+				  //format coordinates for marker
+				  latlng = new google.maps.LatLng(end[1],end[0]);	
+				  //define name and text
+				  name = "End";
+				  text = "Length: " + lengthMiles +" miles";
+				  html = "<b>"+name+"</b><br>"+text;
+			  	  dataType = "routeEnd";
+				  createMarker(latlng,name,html,dataType,endMarkers);
+				  
+				  //capture elevation from google maps
+				  var elevator = new google.maps.ElevationService;
+				  
+				  //create elevation profile, with one entry for every routeCoord location
+				  //limit samples so graph doesn't crash
+				  var samples;
+				  if (routeCoord.length <= 500) {
+					  samples = routeCoord.length;
+				  } else {samples = 500};
+				  elevator.getElevationAlongPath({
+					  path: routeCoord,
+					  samples: samples}, function(results, status) {
+						  showElevation(results, status, text, routeCoord);
+					  });
+			  }
+		    
 		  });
 	  };
 }
+
 //Takes an array of ElevationResult objects and plots the elevation profile on a Visualization API Column Chart
-function showElevation(elevations, status){
+function showElevation(results, status, text, routeCoord){
 	var chartDiv = document.getElementById('elevation_chart');
     if (status !== 'OK') {
       // Show the error code inside the chartDiv.
@@ -514,41 +565,132 @@ function showElevation(elevations, status){
           status;
       return;
     }
- // Create a new chart in the elevation_chart DIV.
-    var chart = new google.visualization.ColumnChart(chartDiv);
+    
+	// Create a new chart in the elevation_chart DIV.
+    var chart = new google.visualization.AreaChart(chartDiv);
 
-    // Extract the data from which to populate the chart.
-    // Because the samples are equidistant, the 'Sample'
-    // column here does double duty as distance along the
-    // X axis.
-    var data = new google.visualization.DataTable();
+    //isolate elevation data
+    var elevations = results;
+    
+    var elevationPath = [];
+    for (var i=0; i < results.length; i++) {
+    	elevationPath.push(elevations[i].location); //push elevation data with location data to the array
+    }
+    
+    //store elevation in array for gain/loss
+    var elevationChange = [];
+    
+    var data= new google.visualization.DataTable();
     data.addColumn('string', 'Sample');
     data.addColumn('number', 'Elevation');
-    for (var i = 0; i < elevations.length; i++) {
-      data.addRow(['', elevations[i].elevation]);
-    }
-
+    for (var i = 0; i < results.length; i++) {
+    	var elev = Math.round((elevations[i].elevation)*3.28);
+        data.addRow(['', elev]);
+        elevationChange.push(elev);
+    };
+    
+    var chartOptions = {
+    		height: 150, //height of chart onScreen
+		    legend: 'none',
+		    vAxis: {
+		    	title: 'Feet', 
+		    	titleTextStyle: {fontSize: 10}, 
+		    	minValue: 500, 
+		    	maxValue: 1200
+		    },
+		    hAxis: {
+		    	title: text, 
+		    	titleTextStyle: {
+		    		fontSize: 14,
+		    		italic: false
+	    		}
+		    }
+    };
+    
     // Draw the chart using the data within its DIV.
-    chart.draw(data, {
-      height: 150,
-      legend: 'none',
-      titleY: 'Meters'
+    chart.draw(data, chartOptions);
+    
+    var elevIcon = {
+    		url: 'img/routeStart.png',
+    		scaledSize: new google.maps.Size(10,10),
+    		origin: new google.maps.Point(0,0),
+    		anchor: new google.maps.Point(5,5)
+    };
+    
+    var elevationMarker = new google.maps.Marker({
+    	position: {lat:0,lng:0},
+    	map:map,
+    	icon: elevIcon
     });
+    
+    openMarkers.push(elevationMarker);
 
+    //add event handler to mouseOver chart
+    google.visualization.events.addListener(chart, 'onmouseover', function(e) {
+    	var index = e["row"]-1; //find out how far along the route you  are, adjusted to count from 0
+    	var latlng = routeCoord[index];
+    	elevationMarker.setPosition(latlng);
+    });
+    
+    //Populate the Route Details div
+    //calculate elevation gain and drop based on elevationChange, populated during the chart construction
+    var gain = 0;
+    var drop = 0;
+    var elevationText = '';
+    for (var i = 0; i < elevationChange.length-1; i++) {
+    	var next = i+1;
+    	var change = elevationChange[i]-elevationChange[next];
+    	if (change>0) {
+    		drop += change;
+    	} else {
+    		gain += change*-1;
+    	};
+    elevationText = "Elevation gain : "+gain+" feet<br>Elevation drop: "+drop+" feet"
+    }
+    routePanel(text,elevationText);
+   
 }
+
+function loadRouteNames(sites,bounds) {
+	var streets = [];
+	var count = 0;
+	//only fires if sites have been specified
+	if (sites.length>0){
+		$.each(sites, function(i, e) {
+			if (e["street"]){
+				var street = e["street"];
+				streets.push(" "+count+". Follow "+ street);
+				count++;
+			}
+		});
+	};
+	
+	var html = '<p>';
+	for (var i = 1; i<streets.length; i++){
+		html += streets[i] + "<br>";
+	};
+	html += "</p>";
+	var stepByStep = $("#stepByStep");
+	stepByStep.html(html); //populate the HTML
+	stepByStep.css("display","block"); //show stepByStep
+}
+
+function routePanel(lengthText,elevationText) {
+	var panelContent = $("#routePanelContent");
+	var html = "<h3>Route Details</h3><p>"+lengthText+"<br>"+elevationText+"</p>";
+	panelContent.html(html);
+}
+
+
 
 //IF YOU WRAP THIS IN AN ANON FUNCTION, getStartCoord/end need to be global...
 function getStartCoords(lat,lng) {
 	sourceCoord = [lng,lat];
-	//TEST
-	console.log(sourceCoord);
 	reverseGeocode(lat,lng,'#startbox',sourceCoord);
 }
 
 function getEndCoords(lat,lng) {
 	targetCoord = [lng,lat];
-	//TEST
-	console.log(targetCoord);
 	reverseGeocode(lat,lng,'#endbox',targetCoord);
 }
 

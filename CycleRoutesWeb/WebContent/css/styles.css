@@ -3,112 +3,61 @@ html,body{
 }
 
 body {
-  padding-top: 50px;
 }
-
-.navbar-inverse{
-	background-color:#f5f5f5;
-	background-image:none;
-	color:black;
-	border-color: lightgray;
-}
-.navbar-inverse .navbar-brand {
-	color:black;
-	}
 	
 .container-fluid, .row{
   background-color: #f5f5f5;
 }
-.sidebar {
-  padding: 12px;
-  background-color: #f5f5f5;
-}
-
-form {
-  padding-top: 12px;
-}
 
 #map-canvas {
-  height:92%;
+  height:100%;
   position: absolute;
   right:0;
 }
 
-.layerToggle {
-	position: absolute;
-	z-index: 1;
-	text-align: center;
-}
-
-#toggleAttractions {
-	top: 15vh;
-	right: 1vw;
-	height: 5vh;
-	width: 8vw;
-}
-#toggleTweets {
-	top: 20vh;
-	right: 1vw;
-	height: 5vh;
-	width: 8vw;
-}
-#getDirections {
-	position: static;
-	left: 0;
-	padding: 12px 20px;
-	width: 20vw;
-	margin: 1vh 0;
-	background-color: #2ca25f;
-}
-
-form {
-	position: absolute;
-	float: left;
-	top: 12vh;
-	left: 1vw;
-	z-index: 2;
-}
-
-input[type=text], select {
-    width: 20vw;
-    padding: 12px 20px;
-    margin: 1vh 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
 /* infoBox navButtons */
-
 
 #startbutton {
 	display:inline;
-	background-color: #2ca25f;
+	background-color: rgba(44,162,95,0.8);
+	float: left;
+	margin-left: 1vw;
+	margin-top: 0.5vh;
 }
 
 #startbutton:hover {
-	background-color: #99d8c9;
+	background-color: rgba(153, 216, 201,0.8);
 }
 
 #endbutton {
 	display:inline;
-	background-color: #e34a33;
+	background-color: rgba(227, 74, 51,0.8);
+	float:right;
+	margin-right: 1vw;
+	margin-top: 0.5vh;
 }
 
 #endbutton:hover {
-	background-color: #fdbb84;
+	background-color: rgba(253, 187, 132,0.8);
 }
 
 
 
 /* side panel */
 
+form {
+	position: absolute;
+	float: left;
+	top: 2vh;
+	left: 1vw;
+	z-index: 2;
+}
+
 #sidePanelContainer {
 	margin: 1vh 0;
 	background-color: white;
-	width: 25vw;
-	padding: 12px 20px;
+	width: 27vw;
+	padding: 1vw 2vh;
 	border-radius: 4px;
 	border: 1px solid #ccc;
 	box-sizing: border-box;
@@ -120,17 +69,78 @@ input[type=text], select {
 
 #panelButton {
 	display:block;
-	margin: auto;
+	margin: 0.5vh auto;
 	border: none;
+	opacity: 0.75;
+}
+
+#routePanelContent {
+	margin: 1vh;
+}
+
+#routePanelContent h3{
+	margin-bottom: 1vh;
+}
+
+#stepByStep{
+	display: none;
+	height: 10vh;
+	margin: 1vh;
+	overflow-y: scroll;
+}
+
+.dirIcon {
+	filter: invert(65%);
+	width: 4vw;
+	float: left;
+	padding-top: 3vh;
+	padding-right: 0.5vw;
+}
+
+#getDirections {
+	position: static;
+	left: 0;
+	padding: 12px 20px;
+	width: 25vw;
+	margin: 1vh 0;
+	background-color: #2ca25f;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 1em;
+}
+
+#getDirections:hover {
+	background-color: rgba(153, 216, 201,0.8);
+	color: #525252;
+}
+
+.inputContainer {
+	display: inline-block;
+}
+
+input[type=text], select {
+    width: 20vw;
+    height: 6vh;
+    padding: 12px 20px;
+    margin: 1vh 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    float: right;
+}
+
+.widgets-wrapper {
+	margin: auto;
+	width:100%;
 }
 
 .widgets {
-	position: absolute;
 	z-index: 100;
 	height: 5vh;
+	width: 100%;
 	display:inline-block;
 	left:50%;
-	top: 90vh;
 	opacity: 0.75;
 }
 
@@ -139,14 +149,74 @@ input[type=text], select {
 	cursor: pointer;
 }
 
-#help,
-#locateMe {
+#help {
 	display: inline-block;
 	float: right;
 }
+#locateMe {
+	display: inline-block;
+	width: 50%;
+	float: left;
+}
 
-#helpImg, 
+#locateMe p {
+	display: table-cell;
+	vertical-align: middle;
+	padding-top: 1vh;
+	padding-left: 0.5vw;
+}
+
+#helpImg {
+	float: right;
+	margin-top: 50%;
+	width: 1vw;
+}
 #locateMeImg {
-	display: block;
-	margin: auto
+	float: left;
+	width: 2vw;
+}
+
+
+
+/*Style the filter menu*/
+
+.menu-ui {
+    background:#fff;
+    position:absolute;
+    top:2vh;right:1vw;
+    z-index:1;
+	width:10vw;
+	border-radius: 4px;
+	border:1px solid rgba(0,0,0,0.4);
+}
+.menu-ui a {
+	font-size:1em;
+	color:#525252;
+	display:block;
+	height: 6vh;
+	margin:0;
+	padding-top: 2vh;
+	text-decoration:none;
+	border-bottom:1px solid rgba(0,0,0,0.25);
+	text-align:center;
+    font-size: 1em;
+}
+.menu-ui a:first-child {
+	border: none;
+	border-radius:4px 4px 0 0;
+}
+.menu-ui a:last-child {
+	border:none;
+	border-radius:0 0 4px 4px;
+}
+.menu-ui a:hover {
+	background:#f8f8f8;
+	color:#404040;
+}
+.menu-ui a.active,
+.menu-ui a.active:hover {
+	border-bottom:1px solid rgba(255,255,255,0.5);
+	background:rgba(52,52,52,0.8);
+	color:#fff;
+	font-weight: bold;
 }
