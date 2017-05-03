@@ -118,7 +118,7 @@
 <!-- Bootstrap -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization,geometry"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=########&libraries=places,visualization,geometry"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="lib/infobox/src/infobox.js"></script>
 <script type="text/javascript" src="lib/intro.js"></script>

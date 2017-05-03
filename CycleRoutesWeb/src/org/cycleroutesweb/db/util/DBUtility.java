@@ -10,8 +10,8 @@ public class DBUtility {
 
 	private static final String Driver= "org.postgresql.Driver";
 	private static final String ConnUrl= "jdbc:postgresql://144.92.235.47/cycleroutesdb";
-	private static final String Username = "postgres";
-	private static final String Password = "Ascendant_17";
+	private static final String Username = "########";
+	private static final String Password = "########";
 
 	
 	//This is a constructor
