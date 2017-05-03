@@ -264,3 +264,7 @@ input[type=text], select {
     background-color: #fff;
 	border:1px solid rgba(0,0,0,0.8);
 }
+
+a#githublink {
+	color: #red;	
+}
