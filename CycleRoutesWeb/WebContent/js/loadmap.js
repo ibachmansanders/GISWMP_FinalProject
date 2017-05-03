@@ -144,6 +144,19 @@ function widgets(){
 	locateWidget.click(function(){
 		userLocation();
 	});
+    
+    // add event listeners for about panel 
+    aboutWidget = $("#aboutbutton");
+    aboutWidget.click(function(){
+        console.log($("#aboutuspanel").css("display"))
+        if ($("#aboutuspanel").css("display") == "block") {
+            $("#aboutuspanel").css("display", "none");
+            console.log($("#aboutuspanel").css("display"))
+        } else {
+            $("#aboutuspanel").css("display", "block");
+            console.log($("#aboutuspanel").css("display"))
+        };
+    });        
 };
 
 

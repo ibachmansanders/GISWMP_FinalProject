@@ -61,13 +61,47 @@
 				<div class="widgets-wrapper">
 					<div class="widgets">
 						<div id="locateMe" data-step="4" data-intro="Locate yourself on the map." data-position="right"></div>
+                        <button id="aboutbutton" type="button" class="btn btn-default" >About</button>                         
 						<div id="help" href="javascript:void(0);" onclick="javascript:introJs().start();"></div>
 					</div>
 				</div>
 			</div>
 		</form>
 		
-
+        <div id="aboutuspanel"> 
+              <div class="panel-group" id="accordion">
+                <div class="panel panel-default"> 
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">About the Bike Routes</a>
+                    </h4>
+                  </div>
+                  <div id="collapse1" class="panel-collapse">
+                    <div class="panel-body">
+                        <p>Everyone wants to find the most interesting, safest, and rideable bike route around town, right? We worked with local Duluth bicylcists to determine what a "rideable" bike route would be. It turns out that you know the best routes and turned to Strava.com for ridership maps. </p>
+                        <p>What's <i>ridership</i> you say? Well, we're at least defining <i>ridership</i> as the density of riders, or the number of riders per road throghout the Duluth, MN area. Strava's fantastic app show annual <a href="http://labs.strava.com/heatmap/#9/-92.27005/46.77749/blue/bike" target="_blank">Global Heatmap</a> for all the roads worldwide.</p>
+                        <p>To digest Strava' data into a biking app for you, we downloaded a copy of the Global Heatmap and analyzed each road within the St. Louis County to associate a "rideability" score. We then use the opensource <a href="http://pgrouting.org/" target="_blank">pgRouting</a> tool for our backend PostGIS/Postgresql database to take your start and end point to create a "rideable" bike route for you!</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">About Us</a>
+                    </h4>
+                  </div>
+                  <div id="collapse2" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <h4>We're a bunch of GIS junkies and coding gurus having fun while in school for an online master's in GIS/Cartgraphy (Web Map Programming) at the University of Wisconsin-Madison.</h4> 
+                        <ul><strong>Brian Robinson</strong><i><small><code>Ninja Warrier Developer</code></small></i></ul>
+                        <ul><strong>JohnMark Fisher </strong><i><small><code>Stealthy Sys Admin</code></small></i></ul>
+                        <ul><strong>Kim Sundeen </strong><i><small><code>Kung fu Coder</code></small></i></ul>
+                        <ul><strong>Ian Bachman-Sanders </strong><i><small><code>Coding Bug Assasin</code></small></i></ul>              
+                    </div>
+                  </div>
+                </div>
+              </div> 
+            </div>    <!-- end aboutpanel-->    
 		
 		<div id="map-canvas" class="col-xs-12"></div>
 	  
