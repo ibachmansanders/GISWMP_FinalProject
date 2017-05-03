@@ -72,12 +72,12 @@
                <div class="panel"> 
                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
 	                 <div class="panel-heading">
-	                   <h4 class="panel-title">
-	                     The Bike Routes
-	                   </h4>
+	                   <h3 class="panel-title">
+	                     About the Bike Routes
+	                   </h3>
                      </div>
                    </a>
-                 <div id="collapse1" class="panel-collapse">
+                 <div id="collapse1" class="panel-collapse collapse">
                    <div class="panel-body">
                        <p>Everyone wants to find the most interesting, safest, and rideable bike route around town, right? We worked with local Duluth bicyclists to determine what a "rideable" bike route would be. It turns out that riders already know the best routes, so we turned to Strava.com for ridership maps. </p>
                        <p>What's <i>ridership</i> you say? Well, we define <i>ridership</i> as the density of riders, or the number of riders per road throughout the Duluth, MN area. Strava's fantastic app produces an annual <a href="http://labs.strava.com/heatmap/#9/-92.27005/46.77749/blue/bike" target="_blank">Global Heatmap</a> of cycling for all the roads worldwide.</p>
@@ -88,18 +88,19 @@
                <div class="panel">
                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
                    <div class="panel-heading">
-                     <h4 class="panel-title">
+                     <h3 class="panel-title">
                        About Us
-                     </h4>
+                     </h3>
                    </div>
                  </a>
                  <div id="collapse2" class="panel-collapse collapse">
                    <div class="panel-body">
-                       <h4>We're a bunch of GIS junkies and coding gurus having fun while in school for a master's in GIS/Cartgraphy (Web Map Programming) at the University of Wisconsin-Madison.</h4> 
-                       <ul><strong>Brian Robinson</strong><i><small><code>Ninja Warrier Developer</code></small></i></ul>
-                       <ul><strong>JohnMark Fisher </strong><i><small><code>Stealthy Sys Admin</code></small></i></ul>
-                       <ul><strong>Kim Sundeen </strong><i><small><code>Kung fu Coder</code></small></i></ul>
-                       <ul><strong>Ian Bachman-Sanders </strong><i><small><code>Coding Bug Assasin</code></small></i></ul>              
+                       <h5>We're a bunch of GIS junkies and coding gurus having fun while in school for a master's in GIS/Cartgraphy (Web Map Programming) at the University of Wisconsin-Madison.</h5> 
+                       <ul><strong>Brian Robinson</strong>: <i><small>bdrobinson2[at]wisc.edu ~ <code>Ninja Warrier Developer</code></small></i></ul>
+                       <ul><strong>JohnMark Fisher </strong>: <i><small>jjfisher2[at]wisc.edu ~ <code>Stealthy Sys Admin</code></small></i></ul>
+                       <ul><strong>Kim Sundeen</strong>: <i><small>kim.h.sundeen[at]gmail.com ~ <code>Kung fu Coder</code></small></i></ul>
+                       <ul><strong>Ian Bachman-Sanders </strong>: <i><small>bachmansande[at]wisc.edu ~ <code>Coding Bug Assasin</code></small></i></ul>      
+                       <h5>Feel free to send us feedback on the project! Or, see the<a id="githublink" style="color:blue;" href="https://github.com/ibachmansanders/GISWMP_FinalProject/" target="_blank"> github repo.</a></h5>        
                    </div>
                  </div>
                </div>
