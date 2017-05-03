@@ -27,11 +27,7 @@ function initialization() {
 	    };
 	  
 	// Render the map within the empty div
-	map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
-	  
-	google.maps.event.addListener(map, 'click', function() {
-        infoBox.close();
-	}); 
+	map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions); 
 	
 	//allow users to dblclick to create markers
 	createMark(map);
@@ -144,19 +140,24 @@ function widgets(){
 	locateWidget.click(function(){
 		userLocation();
 	});
-    
+	
     // add event listeners for about panel 
     aboutWidget = $("#aboutbutton");
     aboutWidget.click(function(){
-        console.log($("#aboutuspanel").css("display"))
         if ($("#aboutuspanel").css("display") == "block") {
             $("#aboutuspanel").css("display", "none");
-            console.log($("#aboutuspanel").css("display"))
         } else {
             $("#aboutuspanel").css("display", "block");
-            console.log($("#aboutuspanel").css("display"))
         };
-    });        
+    }); 
+    
+	//a few nifty triggers to close map clutter onClick
+	google.maps.event.addListener(map, 'click', function() {
+        infoBox.close();
+	}); 
+	google.maps.event.addListener(map,'click', function() {
+		$("#aboutuspanel").css("display", "none");
+	});
 };
 
 
@@ -170,7 +171,7 @@ function userLocation() {
 			var latlng = new google.maps.LatLng(lat,lng);
 			var name;
 			var text = "Coordinates: "+Math.round(lat*10000)/10000+", "+Math.round(lng*10000)/10000; //show to four decimals
-			var dataType = 'routeStart'; //don't show diretions to/from
+			var dataType = 'routeStart'; //don't show directions to/from
 			var markers = openMarkers; //add these to the open markers
 			map.setCenter(latlng); //set center at your location
 			//use geocoder to find address location, use it as name and create marker

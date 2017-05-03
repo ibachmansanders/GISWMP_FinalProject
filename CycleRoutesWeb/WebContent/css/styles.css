@@ -149,10 +149,6 @@ input[type=text], select {
 	cursor: pointer;
 }
 
-#help {
-	display: inline-block;
-	float: right;
-}
 #locateMe {
 	display: inline-block;
 	width: 50%;
@@ -162,20 +158,32 @@ input[type=text], select {
 #locateMe p {
 	display: table-cell;
 	vertical-align: middle;
+	font-size: 1em;
 	padding-top: 1vh;
 	padding-left: 0.5vw;
+}
+
+#locateMeImg {
+	float: left;
+	width: 2vw;
+}
+
+#aboutbutton {
+	font-size: 1em;
+	padding-top: 1vh;
+	border: none;
+	float: right;
+}
+
+#help {
+	display: inline-block;
+	float: right;
 }
 
 #helpImg {
 	float: right;
 	width: 2vw;
 }
-#locateMeImg {
-	float: left;
-	width: 2vw;
-}
-
-
 
 /*Style the filter menu*/
 
@@ -220,15 +228,39 @@ input[type=text], select {
 	font-weight: bold;
 }
 
+/* popup accordion */
+
+#accordion {
+	margin-bottom: 0;
+}
+
+.panel-heading {
+	background-color: #fff;
+	text-align: center;
+}
+
+.panel-heading:hover {
+	background-color: #e7e7e7;
+}
+
+.panel a {
+	text-decoration: none;
+	color: #333;	
+}
+
+.panel a:hover {
+	text-decoration: none;
+	color: #333;
+}
+
 #aboutuspanel {
     display: none;
     position: absolute;
     width: 50vw;
-    height: 50vh;
     left: 30vw;
     top: 30vh;
     z-index: 100;
     border-radius: 4px;
-    background-color: #D3D3D3;
-	border:1px solid rgba(0,0,0,0.4);
+    background-color: #fff;
+	border:1px solid rgba(0,0,0,0.8);
 }
