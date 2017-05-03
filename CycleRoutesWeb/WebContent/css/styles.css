@@ -262,9 +262,9 @@ input[type=text], select {
     z-index: 100;
     border-radius: 4px;
     background-color: #fff;
-	border:1px solid rgba(0,0,0,0.8);
+	border:1px solid rgba(0,0,0,0.4);
 }
 
-a#githublink {
+#githublink a {
 	color: #red;	
 }
