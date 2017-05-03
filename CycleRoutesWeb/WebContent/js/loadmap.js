@@ -40,17 +40,7 @@ function initialization() {
 	initAutocomplete();
 	
 	//allow users to enter addresses, and create a marker
-	var geocoder = new google.maps.Geocoder();
-	document.getElementById('startbox').addEventListener('keydown',function(e) {
-		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'enter key' - 13
-			geocodeAddress(geocoder,map,'startbox',sourceCoord);
-		}
-	});
-	document.getElementById('endbox').addEventListener('keydown',function(e) {
-		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'enter key' - 13
-			geocodeAddress(geocoder,map,'endbox',targetCoord);
-		}
-	});
+	setGeocoder();
 	
 	//populate sidePanel with welcomePanel info
 	welcomePanel();
@@ -62,44 +52,29 @@ function initialization() {
 }
 
 
-function widgets(){
-	//widget to display help info
-	var helpWidget = $("#help");
-	html = "<img src = 'img/help.png' id='helpImg' class='widget' alt='help'>";
-	helpWidget.html(html);
-	helpWidget.click(function(){
-		$("#panelButton").trigger("click");
+function createMark(map) {
+	//create an anon marker on dblclick
+	google.maps.event.addListener(map, 'dblclick', function(event) { //listener
+		//get latlng
+		var lat = event.latLng.lat();
+		var lng = event.latLng.lng();
+		var latlng = new google.maps.LatLng(lat,lng);
+		//set up marker parameters using geocoder
+		geocoder.geocode({'location': latlng},function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				var text = results[0].formatted_address;
+				//set up marker parameters
+				var name = "Address:";
+				var html = "<b>"+name+"</b><br>"+text+"<br>";
+				var dataType = "open"; //general markers- for styling
+				var markers = openMarkers;
+				var marker;
+				marker= createMarker(latlng, name, html, dataType, markers)
+			}else{
+				alert(status);
+			}
+		});
 	});
-	//widget to allow user to locate self and use as starting point
-	var locateWidget = $("#locateMe");
-	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'><p> Locate Me</p>";
-	locateWidget.html(html);
-	locateWidget.click(function(){
-		userLocation();
-	});
-};
-
-function welcomePanel() {
-	
-	var sidePanelContent = $('#sidePanelContent'); //panel content to collapse or show
-	sidePanelContent.collapse({toggle: true}); //avoids any errors onLoad for toggling the panel
-	var expandArrow = $("#panelButton");
-	expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">');
-	
-	expandArrow.click(function(){
-		if (expandArrow.html() == '<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">') {
-			expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrowDown.png">');
-			sidePanelContent.collapse("hide");
-		} else {
-			//TODO switch image in right conditional
-			expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">');
-			sidePanelContent.collapse("show");
-		};
-	})
-	
-	var panelContent = $("#sidePanelContent");
-	var html = "<h2>Cycle Routes</h2><br><p>This map will show you the safest and most enjoyable bike routes in Duluth.<br>Create routes by searching for an address address, selecting attractions or tweets on the map, or double clicking anywhere on the map to create your own destination.  Safe travels.</p>"
-	panelContent.html(html);
 }
 
 
@@ -108,6 +83,68 @@ function initAutocomplete() { //gets set up on window load
 	autocompleteTarget =  new google.maps.places.Autocomplete(document.getElementById('endbox'));
 	//when user selects an address (place_changed), active onPlaceChanged function as the place option in autocomplete
 }
+
+
+function setGeocoder() {
+	var geocoder = new google.maps.Geocoder();
+	document.getElementById('startbox').addEventListener('keydown',function(e) {
+		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'tab key' - 9
+			geocodeAddress(geocoder,map,'startbox',sourceCoord);
+		}
+	});
+	document.getElementById('endbox').addEventListener('keydown',function(e) {
+		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'tab key' - 9
+			geocodeAddress(geocoder,map,'endbox',targetCoord);
+		}
+	});
+	document.getElementById('startbox').addEventListener('blur',function(e) {
+		//on keyout
+		geocodeAddress(geocoder,map,'startbox',targetCoord);
+	});
+	document.getElementById('endbox').addEventListener('blur',function(e) {
+		//on keyout
+		geocodeAddress(geocoder,map,'endbox',targetCoord);
+	});
+}
+
+
+function welcomePanel() {
+	
+	var sidePanelContent = $('#sidePanelContent'); //panel content to collapse or show
+	sidePanelContent.collapse({toggle: true}); //avoids any errors onLoad for toggling the panel
+	var expandArrow = $("#panelButton");
+	expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">');
+	
+	//have arrow change based on visibility of the panel information
+	expandArrow.click(function(){
+		if (expandArrow.html() == '<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">') {
+			expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrowDown.png">');
+			sidePanelContent.collapse("hide");
+		} else {
+			expandArrow.html('<img alt="collapse" id="panelButtonImg" src="img/hashArrow.png">');
+			sidePanelContent.collapse("show");
+		};
+	})
+	
+	var panelContent = $("#sidePanelContent");
+	var html = "<h2>Cycle Routes</h2><br><p>This map will show you the safest and most enjoyable bike routes in Duluth.<br>Create routes by searching for an address, selecting attractions or tweets on the map, or double clicking anywhere on the map to create your own destination.  Safe travels.</p>"
+	panelContent.html(html);
+}
+
+
+function widgets(){
+	//widget to display help info
+	var helpWidget = $("#help");
+	html = "<img src = 'img/help.png' id='helpImg' class='widget' alt='help'>";
+	helpWidget.html(html);
+	//widget to allow user to locate self and use as starting point
+	var locateWidget = $("#locateMe");
+	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'><p> Locate Me</p>";
+	locateWidget.html(html);
+	locateWidget.click(function(){
+		userLocation();
+	});
+};
 
 
 //allow user to use GPS location as starting point
@@ -173,32 +210,6 @@ function geocodeAddress(geocoder,map,box,whichCoord) {
 }
 
 
-function createMark(map) {
-	//create an anon marker on dblclick
-	google.maps.event.addListener(map, 'dblclick', function(event) { //listener
-		//get latlng
-		var lat = event.latLng.lat();
-		var lng = event.latLng.lng();
-		var latlng = new google.maps.LatLng(lat,lng);
-		//set up marker parameters using geocoder
-		geocoder.geocode({'location': latlng},function(results, status) {
-			if (status == google.maps.GeocoderStatus.OK) {
-				var text = results[0].formatted_address;
-				//set up marker parameters
-				var name = "Address:";
-				var html = "<b>"+name+"</b><br>"+text+"<br>";
-				var dataType = "open"; //general markers- for styling
-				var markers = openMarkers;
-				var marker;
-				marker= createMarker(latlng, name, html, dataType, markers)
-			}else{
-				alert(status);
-			}
-		});
-	});
-}
-
-
 function toggleLayer(id,sourceCoord,targetCoord){
 	//identify which type of markers you're working with, create variable for array
 	var markersArray;
@@ -217,7 +228,7 @@ function toggleLayer(id,sourceCoord,targetCoord){
 	} else if (id == "2" && markersArray.length == 0){
 		tab_id=id;
 		showSites(tab_id);
-	} else if (id == "3"){ //TODO YOU NEED TO HAVE A WAY TO RESET ROUTES
+	} else if (id == "3"){ 
 		//make existing routes,route markers, tweets,and attractions null
 		var allArrays = [routesArray,startMarkers,endMarkers,tweetMarkers,attractionMarkers,openMarkers];
 		$.each(allArrays,function(i,e){
@@ -236,6 +247,7 @@ function toggleLayer(id,sourceCoord,targetCoord){
 	};
 }
 
+//BUTTON INTERACTIVITY
 //onSubmit button fires attractions layer
 $("#toggleAttractions").click(function(){
 	toggleLayer("1",sourceCoord,targetCoord);
@@ -254,8 +266,14 @@ $("#toggleTweets").click(function(){
 	} else {
 		$(this).removeClass("active");
 	};
-}); //same for tweets
-$("#getDirections").click(function(){toggleLayer("3",sourceCoord,targetCoord)}); //same for directions
+}); //once submit is clicked, show map with tweets
+$("#getDirections").click(function(){
+	//attractions and tweets will be removed, so adjust their styling accordingly
+	$("#toggleAttractions").removeClass("active");
+	$("#toggleTweets").removeClass("active");
+	toggleLayer("3",sourceCoord,targetCoord)
+	}); //once submit is clicked, show map with directions
+
 
 function showSites(tab_id,sourceCoord,targetCoord) {
 	var a = []; //empty data array;
@@ -406,9 +424,7 @@ function createMarker(latlng, name, html, dataType,markers) {
     
     //animate markers :)
     marker.setAnimation(google.maps.Animation.DROP);
-
-    // === Store the category and name info as a marker properties ===
-    //      marker.mycategory = category; TODO? What is the purpose of this?  
+ 
     marker.myname = name;
     
     google.maps.event.addListener(marker, 'click', function() {
@@ -466,8 +482,8 @@ function setInfoBoxOptions(lat,lng,name,html,backgroundColor,dataType) {
 
 
 function loadRoutes(sites,bounds) {
-	//only fires if sites have been specified
-	  if (sites.length>0){
+	  //only fires if sites have been specified (at least two responses will come from the server- street names and geojson)
+	  if (sites.length>1){
 		  //close the welcome panel
 		  if ($('#sidePanelContent').css('height') > "0px") {
 			  $("#panelButton").trigger("click");
@@ -475,7 +491,8 @@ function loadRoutes(sites,bounds) {
 		  
 		  //store route coordinates in an array - initialize it
 		  var routeCoord = [];
-		  //TODO sites length should be 1 here, so should we get rid of $.each?
+		  
+		  //iterate through each site, and load
 		  $.each(sites, function(i, e) {
 			  //response will be in String format, so parse to JSON
 			  if (e["json"]){
@@ -553,6 +570,15 @@ function loadRoutes(sites,bounds) {
 			  }
 		    
 		  });
+	  } else {
+		  alert("That location is outside of Duluth.  Please select a location closer to the city.");
+		  //update map bounds to recenter on Duluth
+		  var latlng1 = new google.maps.LatLng(46.815529, -91.978803);
+		  bounds.extend(latlng1); //adjust extent
+		  var latlng2 = new google.maps.LatLng(46.686330, -92.282236);
+		  bounds.extend(latlng2); //adjust extent
+		  
+		  $("#toggleAttractions").trigger("click"); //show attractions on the map
 	  };
 }
 
@@ -683,7 +709,7 @@ function routePanel(lengthText,elevationText) {
 
 
 
-//IF YOU WRAP THIS IN AN ANON FUNCTION, getStartCoord/end need to be global...
+//Assign sourceCoord and targetCoord when start/destination are selected
 function getStartCoords(lat,lng) {
 	sourceCoord = [lng,lat];
 	reverseGeocode(lat,lng,'#startbox',sourceCoord);

@@ -25,16 +25,16 @@
 	<div class="row">
 	
 		<nav class='menu-ui'>
-		  <a href='#' class='active' id="toggleAttractions" data-step="3" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
-		  <a href='#' id="toggleTweets" data-step="4" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left"><img src="img/tweets.svg" height="20vh" width ="20vw" >Tweets</a>
+		  <a href='#' class='active' id="toggleAttractions" data-step="5" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
+		  <a href='#' id="toggleTweets" data-step="6" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</a>
 		</nav> 
 		
-		<form data-step="1" data-intro="Click here to start mapping your route." data-position="right">
+		<form>
 			<div id="sidePanelContainer">
 				<div id = "introContent">
 					<button type="button" id="panelButton" class="btn btn-default" data-toggle="collapse" data-target="#sidePanelContent"></button>
 				</div>
-				<div id="sidePanelContent"></div>
+				<div id="sidePanelContent" data-step="2" data-intro="Map markers can be selected as your start or destination.  Double click anywhere to make your own marker." data-position="right"></div>
 				<div id="routePanelContent"></div>
 			 	<div id="elevation_chart">
    					<script>
@@ -44,9 +44,10 @@
 				</div>
 				<div id="stepByStep"></div>
        			
-			
-				<div class='inputContainer'><img src="img/directionsStart.png" class="dirIcon"><input type="text" id="startbox" placeholder="Start"></div>
-				<div class='inputContainer'><img src="img/directionsEnd.png" class="dirIcon"><input type="text" id="endbox" placeholder="Destination"></div>
+				<div data-step="1" data-intro="Select start and destination here or directly from the map" data-position="right">
+					<div class='inputContainer'><img src="img/directionsStart.png" class="dirIcon"><input type="text" id="startbox" placeholder="Start"></div>
+					<div class='inputContainer'><img src="img/directionsEnd.png" class="dirIcon"><input type="text" id="endbox" placeholder="Destination"></div>
+				</div>
 				<!-- script to avoid crashes on reload of page by user -->
 				<script>
                 window.onload = function(){
@@ -54,11 +55,12 @@
                      document.getElementById('endbox').value="";
                     };
                 </script>
-		
-				<button type="button" class="layerToggle btn btn-default" id="getDirections">Map My Route</button>
+				<div data-step="3" data-intro="Click here to start mapping your route." data-position="right">
+					<button type="button" class="layerToggle btn btn-default" id="getDirections">Map My Route</button>
+				</div>
 				<div class="widgets-wrapper">
 					<div class="widgets">
-						<div id="locateMe" data-step="2" data-intro="Locate yourself on the map." data-position="right"></div>
+						<div id="locateMe" data-step="4" data-intro="Locate yourself on the map." data-position="right"></div>
 						<div id="help" href="javascript:void(0);" onclick="javascript:introJs().start();"></div>
 					</div>
 				</div>
@@ -81,7 +83,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyDHXqtgqGCj7RMkh3ual_upusbnbFUq4Ko&libraries=places,visualization,geometry"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="lib/infobox/src/infobox.js"></script>
-<script type="text/javascript" src="lib/intro.js"></script>    
+<script type="text/javascript" src="lib/intro.js"></script>
 <script src="js/loadmap.js"></script>
 </body>
 </html>

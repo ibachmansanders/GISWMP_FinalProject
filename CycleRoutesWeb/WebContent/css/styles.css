@@ -168,8 +168,7 @@ input[type=text], select {
 
 #helpImg {
 	float: right;
-	margin-top: 50%;
-	width: 1vw;
+	width: 2vw;
 }
 #locateMeImg {
 	float: left;

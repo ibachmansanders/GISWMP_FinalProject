@@ -93,7 +93,6 @@ private void loadAttractions (HttpServletRequest request, HttpServletResponse re
 	ResultSet res = dbutil.queryDB(sql);
 	while(res.next()){
 		//add to response
-		//TODO add text, etc
 		HashMap<String, String> m = new HashMap<String, String>();
 		m.put("json", res.getString("json"));
 		m.put("name", res.getString("name"));
@@ -142,10 +141,16 @@ private void getPGRoute(HttpServletRequest request, HttpServletResponse response
 	Object stprevious;
 	
 	//sql query to get nearest road id to coord
-	String sqlSource = "(select source from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+sourceCoord+")),4326)),32615))) limit 1)";;
+	String sqlSource = "(select source from d_roads "
+			+ "where st_distance(geom,(st_transform((st_setsrid((st_makepoint("+sourceCoord+")),4326)),32615))) < 2000 "
+			+ "order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+sourceCoord+")),4326)),32615))) "
+			+ "limit 1)";
 
 	//sql query to get nearest road id to coord
-	String sqlTarget = "(select target from d_roads order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) limit 1)";
+	String sqlTarget = "(select target from d_roads "
+			+ "where st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) < 2000 "
+			+ "order by st_distance(geom,(st_transform((st_setsrid((st_makepoint("+targetCoord+")),4326)),32615))) "
+			+ "limit 1)";
 
 	//call a route from the DB using dbutil
 	JSONArray list = new JSONArray(); //for response
