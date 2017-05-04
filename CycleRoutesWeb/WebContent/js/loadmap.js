@@ -45,6 +45,9 @@ function initialization() {
 	widgets();
 	
 	showSites(tab_id,sourceCoord,targetCoord);
+	
+	//enable tooltips
+	$('[data-toggle="tooltip"]').tooltip();
 }
 
 
@@ -84,22 +87,30 @@ function initAutocomplete() { //gets set up on window load
 function setGeocoder() {
 	var geocoder = new google.maps.Geocoder();
 	document.getElementById('startbox').addEventListener('keydown',function(e) {
-		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'tab key' - 9
-			geocodeAddress(geocoder,map,'startbox',sourceCoord);
-		}
+		if ( $('#startbox').val() != []) { //catch empty submissions, lest the user is sent to Florida...
+			if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'tab key' - 9
+				geocodeAddress(geocoder,map,'startbox',sourceCoord);
+			};
+		};
 	});
 	document.getElementById('endbox').addEventListener('keydown',function(e) {
-		if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'tab key' - 9
-			geocodeAddress(geocoder,map,'endbox',targetCoord);
-		}
+		if ( $('#endbox').val() != []) { //catch empty submissions, lest the user is sent to Florida...
+			if (e.keyCode == 13 || e.keyCode == 9) { //fire function on 'tab key' - 9
+				geocodeAddress(geocoder,map,'endbox',targetCoord);
+			};
+		};
 	});
 	document.getElementById('startbox').addEventListener('blur',function(e) {
-		//on keyout
-		geocodeAddress(geocoder,map,'startbox',targetCoord);
+		//on clickOut
+		if ( $('#startbox').val() != []) { //catch empty submissions, lest the user is sent to Florida...
+			geocodeAddress(geocoder,map,'startbox',targetCoord);
+		};
 	});
 	document.getElementById('endbox').addEventListener('blur',function(e) {
-		//on keyout
-		geocodeAddress(geocoder,map,'endbox',targetCoord);
+		//on clickOut
+		if ( $('#endbox').val() != "") { //catch empty submissions, lest the user is sent to Florida...
+			geocodeAddress(geocoder,map,'endbox',targetCoord);
+		};
 	});
 }
 
@@ -131,12 +142,21 @@ function welcomePanel() {
 function widgets(){
 	//widget to display help info
 	var helpWidget = $("#help");
-	html = "<img src = 'img/help.png' id='helpImg' class='widget' alt='help'>";
+	html = "<img src = 'img/help.png' id='helpImg' class='widget' alt='help' data-toggle='tooltip' data-placement='bottom' title='Walkthrough'>";
 	helpWidget.html(html);
 	//widget to allow user to locate self and use as starting point
 	var locateWidget = $("#locateMe");
-	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='help'><p> Locate Me</p>";
+	html = "<img src = 'img/locateMe.png' id='locateMeImg' class='widget' alt='use gps' data-toggle='tooltip' data-placement='bottom' title='Use GPS'>";
 	locateWidget.html(html);
+	var resetView = $("#resetView");
+	html = "<img src = 'img/resetView.png' id='resetViewImg' class='widget' alt='reset map view' data-toggle='tooltip' data-placement='bottom' title='Reset the Map'>";
+	resetView.html(html);
+	//reset view onClick recenters the map
+	resetView.click(function() {
+		map.setCenter({lat: 46.7615612352751, lng: -92.15266549999996});
+		map.setZoom(12);
+	});
+	//locateWidget onClick uses User's GPS location
 	locateWidget.click(function(){
 		userLocation();
 	});

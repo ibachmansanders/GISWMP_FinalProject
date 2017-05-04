@@ -24,8 +24,8 @@
 	<div class="row">
 	
 		<nav class='menu-ui'>
-		  <a href='#' class='active' id="toggleAttractions" data-step="5" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
-		  <a href='#' id="toggleTweets" data-step="6" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</a>
+		  <a href='#' class='active' id="toggleAttractions" data-step="6" data-intro="Click to toggle on/off and check out some awesome Duluth attractions." data-position="left"><img src="img/attractions.svg" height="20vh" width ="20vw">Attractions</a>
+		  <a href='#' id="toggleTweets" data-step="7" data-intro="Click to toggle on/off Tweets around Duluth to see what social media is saying." data-position="left"><img src="img/tweets.svg" height="20vh" width ="20vw">Tweets</a>
 		</nav> 
 		
 		<form>
@@ -60,6 +60,7 @@
 				<div class="widgets-wrapper">
 					<div class="widgets">
 						<div id="locateMe" data-step="4" data-intro="Locate yourself on the map." data-position="right"></div>
+						<div id="resetView" data-step="5" data-intro="Reset the map view." data-position="right"></div>
 						<button id="aboutbutton" type="button" class="btn btn-default" >About</button>
 						<div id="help" href="javascript:void(0);" onclick="javascript:introJs().start();"></div>
 					</div>
@@ -73,8 +74,8 @@
                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
 	                 <div class="panel-heading">
 	                   <h3 class="panel-title">
-	                     About the Bike Routes
-	                   </h3>
+ 	                     About the Bike Routes
+ 	                   </h3>
                      </div>
                    </a>
                  <div id="collapse1" class="panel-collapse collapse">
@@ -100,7 +101,7 @@
                        <ul><strong>JohnMark Fisher </strong>: <i><small>jjfisher2[at]wisc.edu ~ <code>Stealthy Sys Admin</code></small></i></ul>
                        <ul><strong>Kim Sundeen</strong>: <i><small>kim.h.sundeen[at]gmail.com ~ <code>Kung fu Coder</code></small></i></ul>
                        <ul><strong>Ian Bachman-Sanders </strong>: <i><small>bachmansande[at]wisc.edu ~ <code>Coding Bug Assasin</code></small></i></ul>      
-                       <h5>Feel free to send us feedback on the project! Or, see the<a id="githublink" style="color:blue;" href="https://github.com/ibachmansanders/GISWMP_FinalProject/" target="_blank"> github repo.</a></h5>        
+                       <h5>Feel free to send us feedback on the project! Or, see the<a id="githublink" style="color:blue;" href="https://github.com/ibachmansanders/GISWMP_FinalProject/" target="_blank"> github repo.</a></h5>              
                    </div>
                  </div>
                </div>

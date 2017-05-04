@@ -151,19 +151,23 @@ input[type=text], select {
 
 #locateMe {
 	display: inline-block;
-	width: 50%;
+	width: 12%;
 	float: left;
 }
 
-#locateMe p {
-	display: table-cell;
-	vertical-align: middle;
-	font-size: 1em;
-	padding-top: 1vh;
-	padding-left: 0.5vw;
+#locateMeImg {
+	float: left;
+	width: 2vw;
 }
 
-#locateMeImg {
+#resetView {
+	display: inline-block;
+	padding-top:0.3vh;
+	width: 12%;
+	float: left;
+}
+
+#resetViewImg {
 	float: left;
 	width: 2vw;
 }
@@ -268,3 +272,6 @@ input[type=text], select {
 #githublink a {
 	color: #red;	
 }
+
+
+
